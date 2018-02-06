@@ -28,9 +28,18 @@ public class GridSquare extends StackPane {
 
     private GameEntity entity;
 
+    public void recolor() {
+
+        this.color("lightgray");
+    }
+
+    public void color(String color) {
+
+        super.setStyle("-fx-background-color: " + color + ";");
+    }
     public GridSquare() {
-        super.setStyle("-fx-background-color: white;");
-        super.setBorder(new Border(new BorderStroke(Color.BLACK,
+        this.color("lightgray");
+        super.setBorder(new Border(new BorderStroke(Color.BEIGE,
                 BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
     }
 
@@ -45,18 +54,18 @@ public class GridSquare extends StackPane {
     public void select() {
 
         this.setClicked(true);
-        super.setStyle("-fx-background-color: red;");
+        this.color("lightgreen");
     }
 
     public void unselect(int range) {
 
         this.setClicked(false);
-        this.setStyle("-fx-background-color: white;");
+        this.recolor();
     }
 
     public void highlight() {
         this.setClicked(false);
-        super.setStyle("-fx-background-color: lightblue;");
+        this.color("lightblue");
     }
 
     public Point2D getPositionInMatrix() {

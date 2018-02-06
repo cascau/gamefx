@@ -12,8 +12,9 @@ package com.gamefx.engine;
 public interface Constants {
 
     public static final double CAMERA_INITIAL_DISTANCE = -450;
-    public static final double CAMERA_INITIAL_X_ANGLE = 70.0;
-    public static final double CAMERA_INITIAL_Y_ANGLE = 320.0;
+    public static final double CAMERA_INITIAL_X_ANGLE = 180.0;
+    public static final double CAMERA_INITIAL_Y_ANGLE = 180.0;
+    public static final double CAMERA_INITIAL_Z_ANGLE = 0.0;
     public static final double CAMERA_NEAR_CLIP = 0.1;
     public static final double CAMERA_FAR_CLIP = 10000.0;
     public static final double AXIS_LENGTH = 250.0;

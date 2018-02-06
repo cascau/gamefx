@@ -3,10 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.gamefx.main;
+package com.gamefx.main.testframes;
 
 import com.gamefx.engine.Constants;
 import com.gamefx.engine.TXForm;
+import com.gamefx.main.GameWindow;
 import javafx.application.Application;
 import javafx.scene.DepthTest;
 import javafx.scene.Group;

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.gamefx.main;
+package com.gamefx.main.testframes;
 
 import com.gamefx.engine.TXForm;
 import javafx.application.Application;

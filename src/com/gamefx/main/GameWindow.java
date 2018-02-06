@@ -14,23 +14,20 @@ import com.gamefx.engine.Constants;
 import com.gamefx.engine.EngineUtils;
 import com.gamefx.engine.GameUtils;
 import com.gamefx.engine.TXForm;
+import com.gamefx.engine.components.GameEntity;
 import com.gamefx.engine.components.GridSquare;
+
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.event.EventHandler;
-import javafx.geometry.Bounds;
-import javafx.geometry.HPos;
-import javafx.geometry.Insets;
-import javafx.geometry.Point2D;
-import javafx.geometry.VPos;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.geometry.*;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -39,17 +36,18 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Line;
+import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GameWindow extends Application implements Constants {
 
     protected Scene gameScene;
 
-    final int gameSquareSizeX = 20;
-    final int gameSquareSizeY = 20;
+    final int gameSquareSizeX = 50;
+    final int gameSquareSizeY = 50;
     private GridSquare[][] gameSquares = new GridSquare[gameSquareSizeX][gameSquareSizeY];
     private GridSquare lastClickedSquare;
 
@@ -57,7 +55,6 @@ public class GameWindow extends Application implements Constants {
 
     // top part components
     protected HBox topHBox;
-    protected Button resetButton;
 
     //left part components
     protected VBox leftVBox;
@@ -75,10 +72,12 @@ public class GameWindow extends Application implements Constants {
     protected final TXForm axisGroup = new TXForm();
     protected final TXForm moleculeGroup = new TXForm();
     protected final TXForm world = new TXForm();
-    protected final PerspectiveCamera camera = new PerspectiveCamera(true);
+    protected final PerspectiveCamera camera = new PerspectiveCamera(false);
     protected final TXForm cameraXForm = new TXForm();
     protected final TXForm cameraXForm2 = new TXForm();
     protected final TXForm cameraXForm3 = new TXForm();
+    protected Rotate rotationTransform;
+
 
     protected double mousePosX;
     protected double mousePosY;
@@ -87,41 +86,42 @@ public class GameWindow extends Application implements Constants {
     protected double mouseDeltaX;
     protected double mouseDeltaY;
 
+    protected boolean keyWPressed = false, keySPressed = false, keyAPressed = false, keyDPressed = false;
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+
     protected void initGui(Stage primaryStage) {
 
-        primaryStage.setOnCloseRequest((WindowEvent t) -> {
-            Platform.exit();
-            System.exit(0);
-        });
-
         mainPane = new BorderPane();
+
         topHBox = this.createTopHBox();
         BorderPane topPane = new BorderPane(topHBox);
-        topPane.setPadding(new Insets(2));
+//        topPane.setPadding(new Insets(2));
         mainPane.setTop(topPane);
 
         centerPane = new BorderPane();
-        gameScene = new Scene(centerPane, 1024, 768);
-
-        centerPane.setPadding(new Insets(2));
-        createCenter();
+//        centerPane.setPadding(new Insets(2));
+        createCenterPane();
         mainPane.setCenter(centerPane);
 
         leftVBox = this.createLeftVBox();
-
         BorderPane lefPane = new BorderPane(leftVBox);
-        lefPane.setPadding(new Insets(2));
+//        lefPane.setPadding(new Insets(2));
         mainPane.setLeft(lefPane);
 
         bottomHBox = this.createBottomHBox();
         BorderPane bottomPane = new BorderPane(bottomHBox);
-        bottomPane.setPadding(new Insets(2));
+//        bottomPane.setPadding(new Insets(2));
         mainPane.setBottom(bottomPane);
 
         rightVBox = this.createRightVBox();
         BorderPane rightPane = new BorderPane(rightVBox);
-        rightPane.setPadding(new Insets(2));
+//        rightPane.setPadding(new Insets(2));
         mainPane.setRight(rightPane);
+
+        gameScene = new Scene(mainPane, 1200, 1000);
 
         primaryStage.setScene(gameScene);
         primaryStage.show();
@@ -136,65 +136,34 @@ public class GameWindow extends Application implements Constants {
         handleKeyboard(gameScene, root);
     }
 
+    protected  void initListeners() {
+        addWSADListeners();
+
+        Bounds boundsInScene = mainPane.localToScene(mainPane.getBoundsInLocal());
+        Point2D center = GameUtils.getCenterOfRectangle(boundsInScene);
+        // create a rotation transform starting at 0 degrees, rotating about pivot point 50, 50.
+        rotationTransform = new Rotate(0, 0,0);
+        mainPane.getTransforms().add(rotationTransform);
+
+        // bind the transforms pivot points to our slider controls.
+//        rotationTransform.pivotXProperty().bind(new SimpleDoubleProperty(center.getX()));
+//        rotationTransform.pivotYProperty().bind(new SimpleDoubleProperty(center.getY()));
+        rotationTransform.pivotXProperty().setValue(0);
+        rotationTransform.pivotYProperty().setValue(0);
+        rotationTransform.pivotZProperty().setValue(0);
+    }
+
     @Override
     public void start(Stage primaryStage) {
 
         initGui(primaryStage);
         initWorld();
+        initListeners();
+        testSelectAndDrawRoad();
 
-        Point2D A = new Point2D(10, 11);
-        Point2D B = new Point2D(5, 9);
-        Point2D C = new Point2D(17, 4);
-        Point2D D = new Point2D(6, 2);
-        Point2D E = new Point2D(15, 18);
-        Point2D F = new Point2D(3, 15);
-        Point2D G = new Point2D(6, 18);
-
-        GridSquare square;
-        List<Point2D> road = GameUtils.buildRoad(A, B);
-        for (Point2D p : road) {
-            square = GameUtils.getGridFromCoordinates(gameSquares, p);
-            square.select();
-            System.out.println(p.toString());
-        }
-        System.out.println();
-        road = GameUtils.buildRoad(B, C);
-        for (Point2D p : road) {
-            System.out.println(p.toString());
-            square = GameUtils.getGridFromCoordinates(gameSquares, p);
-            square.select();
-        }
-        System.out.println();
-        road = GameUtils.buildRoad(C, D);
-        for (Point2D p : road) {
-            System.out.println(p.toString());
-            square = GameUtils.getGridFromCoordinates(gameSquares, p);
-            square.select();
-        }
-        System.out.println();
-        road = GameUtils.buildRoad(D, E);
-        for (Point2D p : road) {
-            System.out.println(p.toString());
-            square = GameUtils.getGridFromCoordinates(gameSquares, p);
-            square.select();
-        }
-        System.out.println();
-        road = GameUtils.buildRoad(E, F);
-        for (Point2D p : road) {
-            System.out.println(p.toString());
-            square = GameUtils.getGridFromCoordinates(gameSquares, p);
-            square.select();
-        }
-        System.out.println();
-        road = GameUtils.buildRoad(F, G);
-        for (Point2D p : road) {
-            System.out.println(p.toString());
-            square = GameUtils.getGridFromCoordinates(gameSquares, p);
-            square.select();
-        }
     }
 
-    protected void createCenter() {
+    protected void createCenterPane() {
 
         GridPane gridPane = new GridPane();
         gridPane.setPadding(new Insets(2));
@@ -210,13 +179,24 @@ public class GameWindow extends Application implements Constants {
                     GridSquare target = (GridSquare) event.getSource();
 
                     //determine the grid square in the matrix that waas clicked
-                    final Point2D positionInMatrix = GameUtils.getPositionInMatrix(target, centerPane);
-                    System.out.println(positionInMatrix.toString());
+//                    final Point2D positionInMatrix = GameUtils.getPositionInMatrix(target, centerPane);
+//                    log(positionInMatrix.toString());
 
-                    GameUtils.unselectAllGameSquares(gameSquares);
+                    // simple way to handle multi select as ctrl click
+                    if (!event.isControlDown()) {
+                        GameUtils.unselectAllGameSquares(gameSquares);
+                        GameUtils.highlightSquares(gameSquares, target.getPositionInMatrix(), 3);
+                    }
+
                     if (lastClickedSquare != null) {
 
                         lastClickedSquare.select();
+                        List<Point2D> road = GameUtils.buildRoad(lastClickedSquare.getPositionInMatrix(), target.getPositionInMatrix());
+                        for (Point2D p : road) {
+                            gameSquares[(int)p.getX()][(int)p.getY()].color("lightbrown");
+                        }
+                        lastClickedSquare.select();
+                        target.select();
 
                         // print the square boundaries and square center point
                         Bounds boundsInScene = target.localToScene(target.getBoundsInLocal());
@@ -224,24 +204,12 @@ public class GameWindow extends Application implements Constants {
                         Point2D centerCurrentSquare = GameUtils.getCenterOfRectangle(boundsInScene);
                         Point2D centerLastClickedSquare = GameUtils.getCenterOfRectangle(lastClickedSquareBounds);
 
-
-                        System.out.println("X: " + lastClickedSquareBounds.getMinX() + " -> " + centerLastClickedSquare.getX() + " -> " + lastClickedSquareBounds.getMaxX());
-                        System.out.println("Y: " + lastClickedSquareBounds.getMinY() + " -> " + centerLastClickedSquare.getY() + " -> " + lastClickedSquareBounds.getMaxY());
-
                         Line line = new Line(centerLastClickedSquare.getX(), centerLastClickedSquare.getY(), centerCurrentSquare.getX(), centerCurrentSquare.getY());
-                        centerPane.getChildren().add(line);
-
+//                        centerPane.getChildren().add(line);
                         //
                     }
                     lastClickedSquare = target;
                     target.select();
-                    GameUtils.highlightSquares(gameSquares, target.getPositionInMatrix(), 3);
-                    // last, switch the last clicked square
-//                    lastClickedSquare = gameSquares[dx][dy];
-//                    System.out.println("[" + lastClickedSquare.getPositionInMatrix().getX() + " " + lastClickedSquare.getPositionInMatrix().getY() + "] -> [" + dx + "; " + dy + "]");
-//                    System.out.println("[" + dx + "; " + dy + "]");
-
-
                 });
 
                 gameSquares[col][row] = square;
@@ -257,20 +225,21 @@ public class GameWindow extends Application implements Constants {
     }
 
     protected void buildCamera() {
-        System.out.println("buildCamera()");
+        log("buildCamera()");
         root.getChildren().add(cameraXForm);
         cameraXForm.getChildren().add(cameraXForm2);
         cameraXForm2.getChildren().add(cameraXForm3);
         cameraXForm3.getChildren().add(camera);
-//        cameraXForm.setRotateZ(180.0);
-//        cameraXForm2.setRotateZ(180.0);
-//        cameraXForm3.setRotateZ(180.0);
 
+//        cameraXForm3.setRotateX(180.0);
+//        cameraXForm3.setRotateY(180.0);
+//        cameraXForm3.setRotateZ(180.0);
+////
         camera.setNearClip(CAMERA_NEAR_CLIP);
         camera.setFarClip(CAMERA_FAR_CLIP);
         camera.setTranslateZ(CAMERA_INITIAL_DISTANCE);
-        cameraXForm.ry.setAngle(CAMERA_INITIAL_Y_ANGLE);
-        cameraXForm.rx.setAngle(CAMERA_INITIAL_X_ANGLE);
+//        cameraXForm.ry.setAngle(CAMERA_INITIAL_Y_ANGLE);
+//        cameraXForm.rx.setAngle(CAMERA_INITIAL_X_ANGLE);
     }
 
     protected void handleMouse(Scene scene, final Node root) {
@@ -288,47 +257,152 @@ public class GameWindow extends Application implements Constants {
             mouseDeltaX = (mousePosX - mouseOldX);
             mouseDeltaY = (mousePosY - mouseOldY);
 
-            double modifier = 1.0;
+            double modifier = 10;
 
             if (me.isControlDown()) {
-                modifier = CONTROL_MULTIPLIER;
+                rotationTransform.setAxis(Rotate.X_AXIS);
+                cameraXForm.rx.setAngle(cameraXForm.rx.getAngle() + mouseDeltaY * MOUSE_SPEED * modifier * ROTATION_SPEED);
+            }
+            if (me.isAltDown()) {
+                rotationTransform.setAxis(Rotate.Z_AXIS);
             }
             if (me.isShiftDown()) {
-                modifier = SHIFT_MULTIPLIER;
+                rotationTransform.setAxis(Rotate.Z_AXIS);
             }
+
             if (me.isPrimaryButtonDown()) {
-                cameraXForm.ry.setAngle(cameraXForm.ry.getAngle() - mouseDeltaX * MOUSE_SPEED * modifier * ROTATION_SPEED);
-                cameraXForm.rx.setAngle(cameraXForm.rx.getAngle() + mouseDeltaY * MOUSE_SPEED * modifier * ROTATION_SPEED);
+                handleMouseMove(me);
+                // move the scene 2D
+                cameraXForm2.t.setX(cameraXForm2.t.getX() - mouseDeltaX * MOUSE_SPEED * modifier * TRACK_SPEED * 10);
+                cameraXForm2.t.setY(cameraXForm2.t.getY() - mouseDeltaY * MOUSE_SPEED * modifier * TRACK_SPEED * 10);
             } else if (me.isSecondaryButtonDown()) {
+//                cameraXForm.ry.setAngle(cameraXForm.ry.getAngle() - mouseDeltaX * MOUSE_SPEED * modifier * ROTATION_SPEED * 0.2);
+                cameraXForm.rx.setAngle(cameraXForm.rx.getAngle() + mouseDeltaY * MOUSE_SPEED * modifier * ROTATION_SPEED);
+            } else if (me.isMiddleButtonDown()) {
                 double z = camera.getTranslateZ();
                 double newZ = z + mouseDeltaX * MOUSE_SPEED * modifier;
                 camera.setTranslateZ(newZ);
-            } else if (me.isMiddleButtonDown()) {
-                cameraXForm2.t.setX(cameraXForm2.t.getX() + mouseDeltaX * MOUSE_SPEED * modifier * TRACK_SPEED);
-                cameraXForm2.t.setY(cameraXForm2.t.getY() + mouseDeltaY * MOUSE_SPEED * modifier * TRACK_SPEED);
+                // move the scene 2D
+//                cameraXForm2.t.setX(cameraXForm2.t.getX() + mouseDeltaX * MOUSE_SPEED * modifier * TRACK_SPEED * 10);
+//                cameraXForm2.t.setY(cameraXForm2.t.getY() + mouseDeltaY * MOUSE_SPEED * modifier * TRACK_SPEED * 10);
             }
+        });
+        scene.setOnScroll((ScrollEvent event) -> {
+            double zoomFactor = 1.05;
+            double deltaY = event.getDeltaY();
+            if (deltaY < 0) {
+                zoomFactor = 2.0 - zoomFactor;
+            }
+            mainPane.setScaleX(mainPane.getScaleX() * zoomFactor);
+            mainPane.setScaleY(mainPane.getScaleY() * zoomFactor);
+            event.consume();
+//            camera.setTranslateZ(CAMERA_INITIAL_DISTANCE);
+        });
+
+        scene.setOnMouseMoved((MouseEvent event) -> {
+//            handleMouseMove(event);
         });
     }
 
+    protected void addWSADListeners() {
+
+        gameScene.setOnKeyPressed(event -> {
+            switch (event.getCode()) {
+                case W:
+                    keyWPressed = true;
+                    break;
+                case S:
+                    keySPressed = true;
+                    break;
+                case A:
+                    keyAPressed = true;
+                    break;
+                case D:
+                    keyDPressed = true;
+                    break;
+            }
+//            log("\t" + keyWPressed + "\n" + keyAPressed + " " + keySPressed + " " + keyDPressed);
+        });
+
+        gameScene.setOnKeyReleased(event -> {
+            switch (event.getCode()) {
+                case W:
+                    keyWPressed = false;
+                    break;
+                case S:
+                    keySPressed = false;
+                    break;
+                case A:
+                    keyAPressed = false;
+                    break;
+                case D:
+                    keyDPressed = false;
+                    break;
+            }
+//            log("\t" + keyWPressed + "\n" + keyAPressed + " " + keySPressed + " " + keyDPressed);
+        });
+    }
+
+    protected void handleMouseMove(MouseEvent me) {
+//
+//        Bounds boundsInScene = mainPane.localToScene(mainPane.getBoundsInLocal());
+//        log("[" + boundsInScene.getMinX() + " " + boundsInScene.getMinY() + "]");
+    }
+
     protected void handleKeyboard(Scene scene, final Node root) {
-        scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent event) {
-                switch (event.getCode()) {
-                    case Z:
-                        cameraXForm2.t.setX(0.0);
-                        cameraXForm2.t.setY(0.0);
-                        camera.setTranslateZ(CAMERA_INITIAL_DISTANCE);
-                        cameraXForm.ry.setAngle(CAMERA_INITIAL_Y_ANGLE);
-                        cameraXForm.rx.setAngle(CAMERA_INITIAL_X_ANGLE);
-                        break;
-                    case X:
-                        axisGroup.setVisible(!axisGroup.isVisible());
-                        break;
-                    case V:
-                        moleculeGroup.setVisible(!moleculeGroup.isVisible());
-                        break;
-                }
+        scene.setOnKeyPressed(event -> {
+            double moveSpeed = 20;
+            switch (event.getCode()) {
+                case R:
+                    cameraXForm2.t.setX(0.0);
+                    cameraXForm2.t.setY(0.0);
+                    camera.setTranslateZ(CAMERA_INITIAL_DISTANCE);
+                    cameraXForm.ry.setAngle(CAMERA_INITIAL_Y_ANGLE);
+                    cameraXForm.rx.setAngle(CAMERA_INITIAL_X_ANGLE);
+                    cameraXForm.rz.setAngle(CAMERA_INITIAL_Z_ANGLE);
+
+                    mainPane.setTranslateX(0);
+                    mainPane.setTranslateY(0);
+                    break;
+                case X:
+                    axisGroup.setVisible(!axisGroup.isVisible());
+                    break;
+                case V:
+                    moleculeGroup.setVisible(!moleculeGroup.isVisible());
+                    break;
+
+                case W:
+                    mainPane.setTranslateY(mainPane.getTranslateY() - moveSpeed);
+//                    if (keyAPressed) {
+//                        mainPane.setTranslateX(mainPane.getTranslateX() - moveSpeed);
+//                    } else if (keyAPressed) {
+//                        mainPane.setTranslateX(mainPane.getTranslateX() + moveSpeed);
+//                    }
+                    break;
+                case S:
+                    mainPane.setTranslateY(mainPane.getTranslateY() + moveSpeed);
+//                    if (keyAPressed) {
+//                        mainPane.setTranslateX(mainPane.getTranslateX() - moveSpeed);
+//                    } else if (keyAPressed) {
+//                        mainPane.setTranslateX(mainPane.getTranslateX() + moveSpeed);
+//                    }
+                    break;
+                case A:
+                    mainPane.setTranslateX(mainPane.getTranslateX() - moveSpeed);
+//                    if (keyWPressed) {
+//                        mainPane.setTranslateY(mainPane.getTranslateY() - moveSpeed);
+//                    } else if (keySPressed) {
+//                        mainPane.setTranslateY(mainPane.getTranslateY() + moveSpeed);
+//                    }
+                    break;
+                case D:
+                    mainPane.setTranslateX(mainPane.getTranslateX() + moveSpeed);
+//                    if (keyWPressed) {
+//                        mainPane.setTranslateY(mainPane.getTranslateY() - moveSpeed);
+//                    } else if (keySPressed) {
+//                        mainPane.setTranslateY(mainPane.getTranslateY() + moveSpeed);
+//                    }
+                    break;
             }
         });
     }
@@ -336,20 +410,18 @@ public class GameWindow extends Application implements Constants {
     protected HBox createTopHBox() {
 
         HBox hbox = new HBox();
-        hbox.setPadding(new Insets(15, 12, 15, 12));
-        hbox.setSpacing(10);
+        hbox.setPadding(new Insets(1));
+        hbox.setSpacing(0);
         hbox.setStyle("-fx-background-color: #336699;");
         hbox.setPrefHeight(50);
-
-        resetButton = new Button("Reset");
-        resetButton.setPrefSize(100, 20);
-        resetButton.setOnMouseClicked(event -> {
-
-            GameUtils.unselectAllGameSquares(gameSquares);
-            lastClickedSquare = null;
-        });
-
-        hbox.getChildren().add(resetButton);
+//        resetButton = new Button("Reset");
+//        resetButton.setPrefSize(50, 20);
+//        resetButton.setOnMouseClicked(event -> {
+//            GameUtils.unselectAllGameSquares(gameSquares);
+//            lastClickedSquare = null;
+//        });
+//
+//        hbox.getChildren().add(resetButton);
 
         return hbox;
     }
@@ -357,9 +429,10 @@ public class GameWindow extends Application implements Constants {
     protected HBox createBottomHBox() {
 
         HBox hbox = new HBox();
-        hbox.setPadding(new Insets(15, 12, 15, 12));
-        hbox.setSpacing(10);
+        hbox.setPadding(new Insets(1));
+        hbox.setSpacing(0);
         hbox.setStyle("-fx-background-color: #336699;");
+        hbox.setPrefHeight(50);
 
         return hbox;
     }
@@ -367,10 +440,10 @@ public class GameWindow extends Application implements Constants {
     protected VBox createLeftVBox() {
 
         VBox vbox = new VBox();
-        vbox.setPadding(new Insets(15, 12, 15, 12));
-        vbox.setSpacing(10);
+        vbox.setPadding(new Insets(1));
+        vbox.setSpacing(0);
         vbox.setStyle("-fx-background-color: #336699;");
-
+        vbox.setPrefWidth(50);
         vbox.setFillWidth(true);
 
         return vbox;
@@ -379,15 +452,58 @@ public class GameWindow extends Application implements Constants {
     protected VBox createRightVBox() {
 
         VBox vbox = new VBox();
-        vbox.setPadding(new Insets(15, 12, 15, 12));
-        vbox.setSpacing(10);
+        vbox.setPadding(new Insets(1));
+        vbox.setSpacing(0);
         vbox.setStyle("-fx-background-color: #336699;");
         vbox.setPrefWidth(50);
 
         return vbox;
     }
 
-    public static void main(String[] args) {
-        launch(args);
+    private void testSelectAndDrawRoad() {
+
+        Point2D A = new Point2D(10, 11);
+        Point2D B = new Point2D(5, 9);
+        Point2D C = new Point2D(17, 4);
+        Point2D D = new Point2D(6, 2);
+        Point2D E = new Point2D(15, 18);
+        Point2D F = new Point2D(3, 15);
+        Point2D G = new Point2D(6, 18);
+
+        GridSquare square;
+        List<Point2D> road = GameUtils.buildRoad(A, B);
+        for (Point2D p : road) {
+            square = GameUtils.getGridFromCoordinates(gameSquares, p);
+            square.select();
+        }
+        road = GameUtils.buildRoad(B, C);
+        for (Point2D p : road) {
+            square = GameUtils.getGridFromCoordinates(gameSquares, p);
+            square.select();
+        }
+        road = GameUtils.buildRoad(C, D);
+        for (Point2D p : road) {
+            square = GameUtils.getGridFromCoordinates(gameSquares, p);
+            square.select();
+        }
+        road = GameUtils.buildRoad(D, E);
+        for (Point2D p : road) {
+            square = GameUtils.getGridFromCoordinates(gameSquares, p);
+            square.select();
+        }
+        road = GameUtils.buildRoad(E, F);
+        for (Point2D p : road) {
+            square = GameUtils.getGridFromCoordinates(gameSquares, p);
+            square.select();
+        }
+        road = GameUtils.buildRoad(F, G);
+        for (Point2D p : road) {
+            square = GameUtils.getGridFromCoordinates(gameSquares, p);
+            square.select();
+        }
+    }
+    
+    private void log(String message) {
+        System.out.println(message);
     }
 }
