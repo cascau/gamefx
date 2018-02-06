@@ -131,8 +131,7 @@ public class GameWindow extends Application implements Constants {
 
         EngineUtils.buildAxes(world, axisGroup);
         buildCamera();
-//        gameScene.setCamera(camera);
-        centerPane.getScene().setCamera(camera);
+        gameScene.setCamera(camera);
         handleMouse(gameScene, root);
         handleKeyboard(gameScene, root);
     }
