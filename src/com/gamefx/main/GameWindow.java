@@ -17,14 +17,17 @@ import com.gamefx.engine.TXForm;
 import com.gamefx.engine.components.GameEntity;
 import com.gamefx.engine.components.GridSquare;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.geometry.*;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -35,11 +38,12 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Box;
 import javafx.scene.shape.Line;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class GameWindow extends Application implements Constants {
@@ -88,6 +92,12 @@ public class GameWindow extends Application implements Constants {
 
     protected boolean keyWPressed = false, keySPressed = false, keyAPressed = false, keyDPressed = false;
 
+    // miscellaneous
+    private Box dummy;
+
+    Point2D pointFromMove = null;
+    protected int positionInRoad = 0;
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -131,7 +141,18 @@ public class GameWindow extends Application implements Constants {
 
         EngineUtils.buildAxes(world, axisGroup);
         buildCamera();
+
         gameScene.setCamera(camera);
+        dummy = new Box();
+        dummy.setWidth(gameSquares[0][0].getWidth());
+        dummy.setHeight(gameSquares[0][0].getWidth());
+        dummy.setDepth(100);
+
+        dummy.setTranslateX(dummy.getTranslateX() + dummy.getWidth()/2);
+        dummy.setTranslateX(dummy.getTranslateY() + dummy.getHeight()/2);
+        dummy.setTranslateX(dummy.getTranslateZ() + dummy.getDepth()/2);
+        centerPane.getChildren().add(dummy);
+
         handleMouse(gameScene, root);
         handleKeyboard(gameScene, root);
     }
@@ -172,6 +193,7 @@ public class GameWindow extends Application implements Constants {
 
                 GridSquare square = new GridSquare();
                 square.setPositionInMatrix(new Point2D(col, row));
+                square.setPositionInGame2D(new Point2D(row * (int) square.getWidth(), col * (int) square.getHeight()));
                 square.setParentMatrix(gameSquares);
 
                 square.addEventFilter(MouseEvent.MOUSE_CLICKED, (MouseEvent event) -> {
@@ -179,34 +201,57 @@ public class GameWindow extends Application implements Constants {
                     GridSquare target = (GridSquare) event.getSource();
 
                     //determine the grid square in the matrix that waas clicked
-//                    final Point2D positionInMatrix = GameUtils.getPositionInMatrix(target, centerPane);
+//                    final Point2D positionInMatrix = GameUtils.getPositionInMatrix(target, getCenterPane());
 //                    log(positionInMatrix.toString());
-
-                    // simple way to handle multi select as ctrl click
-                    if (!event.isControlDown()) {
-                        GameUtils.unselectAllGameSquares(gameSquares);
-                        GameUtils.highlightSquares(gameSquares, target.getPositionInMatrix(), 3);
-                    }
 
                     if (lastClickedSquare != null) {
 
-                        lastClickedSquare.select();
+//                        lastClickedSquare.select();
                         List<Point2D> road = GameUtils.buildRoad(lastClickedSquare.getPositionInMatrix(), target.getPositionInMatrix());
-                        for (Point2D p : road) {
-                            gameSquares[(int)p.getX()][(int)p.getY()].color("light-brown");
+//                        for (Point2D p : road) {
+//                            gameSquares[(int) p.getX()][(int) p.getY()].color("brown");
+//                        }
+
+                        // simple way to handle multi select as ctrl click
+                        if (event.isControlDown()) {
+                            final Timeline timeline = new Timeline(
+                                    new KeyFrame(Duration.ZERO, (EventHandler) event12 -> {
+                                        Point2D pointToMove = road.get(positionInRoad++);
+                                        gameSquares[(int) pointToMove.getX()][(int) pointToMove.getY()].color("brown");
+
+                                        if (pointFromMove != null) {
+                                            moveDummy(pointFromMove, pointToMove);
+                                        }
+                                        pointFromMove = pointToMove;
+                                    }),
+                                    new KeyFrame(Duration.millis(100))
+                            );
+                            timeline.setOnFinished(event1 -> {
+                                // reset the position in the road after the road was completed
+                                positionInRoad = 0;
+                                target.select();
+                                GameUtils.highlightSquares(gameSquares, target.getPositionInMatrix(), 3);
+                            });
+//                            GameUtils.unhighlightSquares(gameSquares, road.get(0), 3);
+                            timeline.setCycleCount(road.size());
+                            timeline.play();
+
+                            // print the square boundaries and square center point
+                            Bounds boundsInScene = target.localToScene(target.getBoundsInLocal());
+                            Bounds lastClickedSquareBounds = lastClickedSquare.localToScene(lastClickedSquare.getBoundsInLocal());
+                            Point2D centerCurrentSquare = GameUtils.getCenterOfRectangle(boundsInScene);
+                            Point2D centerLastClickedSquare = GameUtils.getCenterOfRectangle(lastClickedSquareBounds);
+
+                            Line line = new Line(centerLastClickedSquare.getX(), centerLastClickedSquare.getY(), centerCurrentSquare.getX(), centerCurrentSquare.getY());
+//                        getCenterPane().getChildren().add(line);
+                            //
+                        } else {
+                            GameUtils.unselectAllGameSquares(gameSquares);
+                            GameUtils.highlightSquares(gameSquares, target.getPositionInMatrix(), 3);
                         }
-                        lastClickedSquare.select();
-                        target.select();
-
-                        // print the square boundaries and square center point
-                        Bounds boundsInScene = target.localToScene(target.getBoundsInLocal());
-                        Bounds lastClickedSquareBounds = lastClickedSquare.localToScene(lastClickedSquare.getBoundsInLocal());
-                        Point2D centerCurrentSquare = GameUtils.getCenterOfRectangle(boundsInScene);
-                        Point2D centerLastClickedSquare = GameUtils.getCenterOfRectangle(lastClickedSquareBounds);
-
-                        Line line = new Line(centerLastClickedSquare.getX(), centerLastClickedSquare.getY(), centerCurrentSquare.getX(), centerCurrentSquare.getY());
-//                        centerPane.getChildren().add(line);
-                        //
+                    } else {
+                        dummy.setTranslateX(target.getTranslateX() + 10);
+                        dummy.setTranslateY(target.getTranslateY() - 10);
                     }
                     lastClickedSquare = target;
                     target.select();
@@ -221,7 +266,17 @@ public class GameWindow extends Application implements Constants {
             gridPane.getColumnConstraints().add(new ColumnConstraints(5, Control.USE_COMPUTED_SIZE, Double.POSITIVE_INFINITY, Priority.ALWAYS, HPos.CENTER, true));
             gridPane.getRowConstraints().add(new RowConstraints(5, Control.USE_COMPUTED_SIZE, Double.POSITIVE_INFINITY, Priority.ALWAYS, VPos.CENTER, true));
         }
-        centerPane.setCenter(gridPane);
+        getCenterPane().setCenter(gridPane);
+    }
+    private void moveDummy(Point2D A, Point2D B) {
+
+        GridSquare gridA = GameUtils.getGridFromCoordinates(gameSquares, A);
+        GridSquare gridB = GameUtils.getGridFromCoordinates(gameSquares, B);
+
+        double dx = gridB.getCenter().getX() - gridA.getCenter().getX();
+        double dy = gridB.getCenter().getY() - gridA.getCenter().getY();
+        dummy.setTranslateX(dummy.getTranslateX() + dx);
+        dummy.setTranslateY(dummy.getTranslateY() + dy);
     }
 
     protected void buildCamera() {
@@ -243,6 +298,7 @@ public class GameWindow extends Application implements Constants {
     }
 
     protected void handleMouse(Scene scene, final Node root) {
+
         scene.setOnMousePressed((MouseEvent me) -> {
             mousePosX = me.getSceneX();
             mousePosY = me.getSceneY();
@@ -502,8 +558,12 @@ public class GameWindow extends Application implements Constants {
             square.select();
         }
     }
-    
+
     private void log(String message) {
         System.out.println(message);
+    }
+
+    public BorderPane getCenterPane() {
+         return centerPane;
     }
 }
