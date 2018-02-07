@@ -142,15 +142,15 @@ public class GameWindow extends Application implements Constants {
         Bounds boundsInScene = mainPane.localToScene(mainPane.getBoundsInLocal());
         Point2D center = GameUtils.getCenterOfRectangle(boundsInScene);
         // create a rotation transform starting at 0 degrees, rotating about pivot point 50, 50.
-        rotationTransform = new Rotate(0, 0,0);
+        rotationTransform = new Rotate(0, 50,50);
         mainPane.getTransforms().add(rotationTransform);
 
         // bind the transforms pivot points to our slider controls.
-//        rotationTransform.pivotXProperty().bind(new SimpleDoubleProperty(center.getX()));
-//        rotationTransform.pivotYProperty().bind(new SimpleDoubleProperty(center.getY()));
-        rotationTransform.pivotXProperty().setValue(0);
-        rotationTransform.pivotYProperty().setValue(0);
-        rotationTransform.pivotZProperty().setValue(0);
+        rotationTransform.pivotXProperty().bind(new SimpleDoubleProperty(center.getX()));
+        rotationTransform.pivotYProperty().bind(new SimpleDoubleProperty(center.getY()));
+//        rotationTransform.pivotXProperty().setValue(0);
+//        rotationTransform.pivotYProperty().setValue(0);
+//        rotationTransform.pivotZProperty().setValue(0);
     }
 
     @Override
@@ -193,7 +193,7 @@ public class GameWindow extends Application implements Constants {
                         lastClickedSquare.select();
                         List<Point2D> road = GameUtils.buildRoad(lastClickedSquare.getPositionInMatrix(), target.getPositionInMatrix());
                         for (Point2D p : road) {
-                            gameSquares[(int)p.getX()][(int)p.getY()].color("lightbrown");
+                            gameSquares[(int)p.getX()][(int)p.getY()].color("light-brown");
                         }
                         lastClickedSquare.select();
                         target.select();
