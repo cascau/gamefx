@@ -14,14 +14,13 @@ import com.gamefx.engine.Constants;
 import com.gamefx.engine.EngineUtils;
 import com.gamefx.engine.GameUtils;
 import com.gamefx.engine.TXForm;
-import com.gamefx.engine.components.GameEntity;
 import com.gamefx.engine.components.GridSquare;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.event.Event;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.*;
 import javafx.scene.Group;
@@ -166,7 +165,6 @@ public class GameWindow extends Application implements Constants {
         rotationTransform = new Rotate(0, 50,50);
         mainPane.getTransforms().add(rotationTransform);
 
-        // bind the transforms pivot points to our slider controls.
         rotationTransform.pivotXProperty().bind(new SimpleDoubleProperty(center.getX()));
         rotationTransform.pivotYProperty().bind(new SimpleDoubleProperty(center.getY()));
 //        rotationTransform.pivotXProperty().setValue(0);
@@ -180,7 +178,7 @@ public class GameWindow extends Application implements Constants {
         initGui(primaryStage);
         initWorld();
         initListeners();
-        testSelectAndDrawRoad();
+//        testSelectAndDrawRoad();
 
     }
 
@@ -215,7 +213,7 @@ public class GameWindow extends Application implements Constants {
                         // simple way to handle multi select as ctrl click
                         if (event.isControlDown()) {
                             final Timeline timeline = new Timeline(
-                                    new KeyFrame(Duration.ZERO, (EventHandler) event12 -> {
+                                    new KeyFrame(Duration.ZERO, event12 -> {
                                         Point2D pointToMove = road.get(positionInRoad++);
                                         gameSquares[(int) pointToMove.getX()][(int) pointToMove.getY()].color("brown");
 
