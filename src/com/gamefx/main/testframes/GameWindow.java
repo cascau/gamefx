@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.gamefx.main;
+package com.gamefx.main.testframes;
 
 /**
  * @author cascau
@@ -141,15 +141,15 @@ public class GameWindow extends Application implements Constants {
         EngineUtils.buildAxes(world, axisGroup);
         buildCamera();
 
-//        gameScene.setCamera(camera);
+        gameScene.setCamera(camera);
         dummy = new Box();
         dummy.setWidth(gameSquares[0][0].getWidth());
         dummy.setHeight(gameSquares[0][0].getWidth());
-        dummy.setDepth(100);
+        dummy.setDepth(gameSquares[0][0].getWidth());
 
         dummy.setTranslateX(dummy.getTranslateX() + dummy.getWidth()/2);
-        dummy.setTranslateX(dummy.getTranslateY() + dummy.getHeight()/2);
-        dummy.setTranslateX(dummy.getTranslateZ() + dummy.getDepth()/2);
+        dummy.setTranslateY(dummy.getTranslateY() + dummy.getHeight()/2);
+        dummy.setTranslateZ(-(dummy.getTranslateZ() + dummy.getDepth()/2));
         centerPane.getChildren().add(dummy);
 
         handleMouse(gameScene, root);

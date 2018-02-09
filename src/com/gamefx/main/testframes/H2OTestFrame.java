@@ -7,11 +7,7 @@ package com.gamefx.main.testframes;
 
 import com.gamefx.engine.Constants;
 import com.gamefx.engine.TXForm;
-import com.gamefx.main.GameWindow;
-import javafx.application.Application;
 import javafx.scene.DepthTest;
-import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;

@@ -39,7 +39,7 @@ public class EngineUtils {
         zAxis.setMaterial(blueMaterial);
 
         axisGroup.getChildren().addAll(xAxis, yAxis, zAxis);
-        axisGroup.setVisible(false);
+        axisGroup.setVisible(true);
         world.getChildren().addAll(axisGroup);
     }
 }

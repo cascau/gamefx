@@ -162,19 +162,19 @@ public class TXForm extends Group {
                            t.getX() + ", " +
                            t.getY() + ", " +
                            t.getZ() + ")  " +
-                           "r = (" +
+                       "r = (" +
                            rx.getAngle() + ", " +
                            ry.getAngle() + ", " +
                            rz.getAngle() + ")  " +
-                           "s = (" +
+                       "s = (" +
                            s.getX() + ", " + 
                            s.getY() + ", " + 
                            s.getZ() + ")  " +
-                           "p = (" +
+                       "p = (" +
                            p.getX() + ", " + 
                            p.getY() + ", " + 
                            p.getZ() + ")  " +
-                           "ip = (" +
+                       "ip = (" +
                            ip.getX() + ", " + 
                            ip.getY() + ", " + 
                            ip.getZ() + ")]";
