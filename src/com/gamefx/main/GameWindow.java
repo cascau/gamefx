@@ -141,7 +141,7 @@ public class GameWindow extends Application implements Constants {
         EngineUtils.buildAxes(world, axisGroup);
         buildCamera();
 
-        gameScene.setCamera(camera);
+//        gameScene.setCamera(camera);
         dummy = new Box();
         dummy.setWidth(gameSquares[0][0].getWidth());
         dummy.setHeight(gameSquares[0][0].getWidth());
