@@ -6,12 +6,8 @@
 package com.gamefx.main.testframes;
 
 import com.gamefx.engine.Constants;
-import com.gamefx.engine.TXForm;
-import com.gamefx.main.GameWindow;
-import javafx.application.Application;
+import com.gamefx.engine.CameraTransform;
 import javafx.scene.DepthTest;
-import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -81,12 +77,12 @@ public class H2OTestFrame extends GameWindow {
         //         [*] hydrogen2XForm
         //             [*] hydrogen2Sphere
         //         [*] bond2Cylinder
-        TXForm moleculeXForm = new TXForm();
-        TXForm oxygenXForm = new TXForm();
-        TXForm hydrogen1SideXForm = new TXForm();
-        TXForm hydrogen1XForm = new TXForm();
-        TXForm hydrogen2SideXForm = new TXForm();
-        TXForm hydrogen2XForm = new TXForm();
+        CameraTransform moleculeXForm = new CameraTransform();
+        CameraTransform oxygenXForm = new CameraTransform();
+        CameraTransform hydrogen1SideXForm = new CameraTransform();
+        CameraTransform hydrogen1XForm = new CameraTransform();
+        CameraTransform hydrogen2SideXForm = new CameraTransform();
+        CameraTransform hydrogen2XForm = new CameraTransform();
 
         Sphere oxygenSphere = new Sphere(40.0);
         oxygenSphere.setMaterial(redMaterial);

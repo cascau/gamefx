@@ -14,7 +14,7 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
 
-public class TXForm extends Group {
+public class CameraTransform extends Group {
 
     public enum RotateOrder {
         XYZ, XZY, YXZ, YZX, ZXY, ZYX
@@ -31,12 +31,12 @@ public class TXForm extends Group {
     { rz.setAxis(Rotate.Z_AXIS); }
     public Scale s = new Scale();
 
-    public TXForm() { 
+    public CameraTransform() {
         super(); 
         getTransforms().addAll(t, rz, ry, rx, s); 
     }
 
-    public TXForm(RotateOrder rotateOrder) { 
+    public CameraTransform(RotateOrder rotateOrder) {
         super(); 
         // choose the order of rotations based on the rotateOrder
         switch (rotateOrder) {
@@ -162,19 +162,19 @@ public class TXForm extends Group {
                            t.getX() + ", " +
                            t.getY() + ", " +
                            t.getZ() + ")  " +
-                           "r = (" +
+                       "r = (" +
                            rx.getAngle() + ", " +
                            ry.getAngle() + ", " +
                            rz.getAngle() + ")  " +
-                           "s = (" +
+                       "s = (" +
                            s.getX() + ", " + 
                            s.getY() + ", " + 
                            s.getZ() + ")  " +
-                           "p = (" +
+                       "p = (" +
                            p.getX() + ", " + 
                            p.getY() + ", " + 
                            p.getZ() + ")  " +
-                           "ip = (" +
+                       "ip = (" +
                            ip.getX() + ", " + 
                            ip.getY() + ", " + 
                            ip.getZ() + ")]";

@@ -6,6 +6,8 @@
 package com.gamefx.engine;
 
 import static com.gamefx.engine.Constants.AXIS_LENGTH;
+
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
@@ -16,7 +18,7 @@ import javafx.scene.shape.Box;
  */
 public class EngineUtils {
 
-    public static void buildAxes(final TXForm world, final TXForm axisGroup) {
+    public static void buildAxes(final Pane world, final CameraTransform axisGroup) {
         System.out.println("buildAxes()");
         final PhongMaterial redMaterial = new PhongMaterial();
         redMaterial.setDiffuseColor(Color.DARKRED);
@@ -39,7 +41,7 @@ public class EngineUtils {
         zAxis.setMaterial(blueMaterial);
 
         axisGroup.getChildren().addAll(xAxis, yAxis, zAxis);
-        axisGroup.setVisible(false);
+        axisGroup.setVisible(true);
         world.getChildren().addAll(axisGroup);
     }
 }

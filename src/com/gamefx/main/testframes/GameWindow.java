@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.gamefx.main;
+package com.gamefx.main.testframes;
 
 /**
  * @author cascau
@@ -13,15 +13,13 @@ import com.gamefx.engine.Constants;
 
 import com.gamefx.engine.EngineUtils;
 import com.gamefx.engine.GameUtils;
-import com.gamefx.engine.TXForm;
+import com.gamefx.engine.CameraTransform;
 import com.gamefx.engine.components.GridSquare;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.*;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -72,13 +70,13 @@ public class GameWindow extends Application implements Constants {
     protected HBox bottomHBox;
 
     protected final Group root = new Group();
-    protected final TXForm axisGroup = new TXForm();
-    protected final TXForm moleculeGroup = new TXForm();
-    protected final TXForm world = new TXForm();
-    protected final PerspectiveCamera camera = new PerspectiveCamera(true);
-    protected final TXForm cameraXForm = new TXForm();
-    protected final TXForm cameraXForm2 = new TXForm();
-    protected final TXForm cameraXForm3 = new TXForm();
+    protected final CameraTransform axisGroup = new CameraTransform();
+    protected final CameraTransform moleculeGroup = new CameraTransform();
+    protected final CameraTransform world = new CameraTransform();
+    protected final PerspectiveCamera camera = new PerspectiveCamera(false);
+    protected final CameraTransform cameraXForm = new CameraTransform();
+    protected final CameraTransform cameraXForm2 = new CameraTransform();
+    protected final CameraTransform cameraXForm3 = new CameraTransform();
     protected Rotate rotationTransform;
 
 
@@ -138,18 +136,18 @@ public class GameWindow extends Application implements Constants {
 
     protected void initWorld() {
 
-        EngineUtils.buildAxes(world, axisGroup);
+        EngineUtils.buildAxes(centerPane, axisGroup);
         buildCamera();
 
         gameScene.setCamera(camera);
         dummy = new Box();
         dummy.setWidth(gameSquares[0][0].getWidth());
         dummy.setHeight(gameSquares[0][0].getWidth());
-        dummy.setDepth(100);
+        dummy.setDepth(gameSquares[0][0].getWidth());
 
         dummy.setTranslateX(dummy.getTranslateX() + dummy.getWidth()/2);
-        dummy.setTranslateX(dummy.getTranslateY() + dummy.getHeight()/2);
-        dummy.setTranslateX(dummy.getTranslateZ() + dummy.getDepth()/2);
+        dummy.setTranslateY(dummy.getTranslateY() + dummy.getHeight()/2);
+        dummy.setTranslateZ(-(dummy.getTranslateZ() + dummy.getDepth()/2));
         centerPane.getChildren().add(dummy);
 
         handleMouse(gameScene, root);
@@ -257,7 +255,7 @@ public class GameWindow extends Application implements Constants {
 
                 gameSquares[col][row] = square;
 
-//                gridPane.add(square, col, row);
+                gridPane.add(square, col, row);
             }
         }
         for (int i = 0; i < gameSquareSizeY; i++) {
@@ -284,15 +282,15 @@ public class GameWindow extends Application implements Constants {
         cameraXForm2.getChildren().add(cameraXForm3);
         cameraXForm3.getChildren().add(camera);
 
-//        cameraXForm.setRotateX(180.0);
-        cameraXForm2.setRotateY(180.0);
+//        cameraXForm3.setRotateX(180.0);
+//        cameraXForm3.setRotateY(180.0);
 //        cameraXForm3.setRotateZ(180.0);
-
+////
         camera.setNearClip(CAMERA_NEAR_CLIP);
         camera.setFarClip(CAMERA_FAR_CLIP);
         camera.setTranslateZ(CAMERA_INITIAL_DISTANCE);
-        cameraXForm.ry.setAngle(CAMERA_INITIAL_Y_ANGLE);
-        cameraXForm.rx.setAngle(CAMERA_INITIAL_X_ANGLE);
+//        cameraXForm.ry.setAngle(CAMERA_INITIAL_Y_ANGLE);
+//        cameraXForm.rx.setAngle(CAMERA_INITIAL_X_ANGLE);
     }
 
     protected void handleMouse(Scene scene, final Node root) {
