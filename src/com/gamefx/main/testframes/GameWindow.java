@@ -13,15 +13,13 @@ import com.gamefx.engine.Constants;
 
 import com.gamefx.engine.EngineUtils;
 import com.gamefx.engine.GameUtils;
-import com.gamefx.engine.TXForm;
+import com.gamefx.engine.CameraTransform;
 import com.gamefx.engine.components.GridSquare;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.*;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -72,13 +70,13 @@ public class GameWindow extends Application implements Constants {
     protected HBox bottomHBox;
 
     protected final Group root = new Group();
-    protected final TXForm axisGroup = new TXForm();
-    protected final TXForm moleculeGroup = new TXForm();
-    protected final TXForm world = new TXForm();
+    protected final CameraTransform axisGroup = new CameraTransform();
+    protected final CameraTransform moleculeGroup = new CameraTransform();
+    protected final CameraTransform world = new CameraTransform();
     protected final PerspectiveCamera camera = new PerspectiveCamera(false);
-    protected final TXForm cameraXForm = new TXForm();
-    protected final TXForm cameraXForm2 = new TXForm();
-    protected final TXForm cameraXForm3 = new TXForm();
+    protected final CameraTransform cameraXForm = new CameraTransform();
+    protected final CameraTransform cameraXForm2 = new CameraTransform();
+    protected final CameraTransform cameraXForm3 = new CameraTransform();
     protected Rotate rotationTransform;
 
 

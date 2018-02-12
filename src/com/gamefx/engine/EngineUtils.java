@@ -18,7 +18,7 @@ import javafx.scene.shape.Box;
  */
 public class EngineUtils {
 
-    public static void buildAxes(final Pane world, final TXForm axisGroup) {
+    public static void buildAxes(final Pane world, final CameraTransform axisGroup) {
         System.out.println("buildAxes()");
         final PhongMaterial redMaterial = new PhongMaterial();
         redMaterial.setDiffuseColor(Color.DARKRED);
