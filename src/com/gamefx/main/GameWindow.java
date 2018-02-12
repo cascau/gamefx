@@ -75,7 +75,7 @@ public class GameWindow extends Application implements Constants {
     protected final TXForm axisGroup = new TXForm();
     protected final TXForm moleculeGroup = new TXForm();
     protected final TXForm world = new TXForm();
-    protected final PerspectiveCamera camera = new PerspectiveCamera(false);
+    protected final PerspectiveCamera camera = new PerspectiveCamera(true);
     protected final TXForm cameraXForm = new TXForm();
     protected final TXForm cameraXForm2 = new TXForm();
     protected final TXForm cameraXForm3 = new TXForm();
@@ -141,7 +141,7 @@ public class GameWindow extends Application implements Constants {
         EngineUtils.buildAxes(world, axisGroup);
         buildCamera();
 
-//        gameScene.setCamera(camera);
+        gameScene.setCamera(camera);
         dummy = new Box();
         dummy.setWidth(gameSquares[0][0].getWidth());
         dummy.setHeight(gameSquares[0][0].getWidth());
@@ -257,7 +257,7 @@ public class GameWindow extends Application implements Constants {
 
                 gameSquares[col][row] = square;
 
-                gridPane.add(square, col, row);
+//                gridPane.add(square, col, row);
             }
         }
         for (int i = 0; i < gameSquareSizeY; i++) {
@@ -284,15 +284,15 @@ public class GameWindow extends Application implements Constants {
         cameraXForm2.getChildren().add(cameraXForm3);
         cameraXForm3.getChildren().add(camera);
 
-//        cameraXForm3.setRotateX(180.0);
-//        cameraXForm3.setRotateY(180.0);
+//        cameraXForm.setRotateX(180.0);
+        cameraXForm2.setRotateY(180.0);
 //        cameraXForm3.setRotateZ(180.0);
-////
+
         camera.setNearClip(CAMERA_NEAR_CLIP);
         camera.setFarClip(CAMERA_FAR_CLIP);
         camera.setTranslateZ(CAMERA_INITIAL_DISTANCE);
-//        cameraXForm.ry.setAngle(CAMERA_INITIAL_Y_ANGLE);
-//        cameraXForm.rx.setAngle(CAMERA_INITIAL_X_ANGLE);
+        cameraXForm.ry.setAngle(CAMERA_INITIAL_Y_ANGLE);
+        cameraXForm.rx.setAngle(CAMERA_INITIAL_X_ANGLE);
     }
 
     protected void handleMouse(Scene scene, final Node root) {
