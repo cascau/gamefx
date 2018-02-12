@@ -138,7 +138,7 @@ public class GameWindow extends Application implements Constants {
 
     protected void initWorld() {
 
-        EngineUtils.buildAxes(world, axisGroup);
+        EngineUtils.buildAxes(centerPane, axisGroup);
         buildCamera();
 
         gameScene.setCamera(camera);
