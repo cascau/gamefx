@@ -10,8 +10,6 @@ import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 
-import static javafx.application.Application.launch;
-
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -56,7 +54,7 @@ public class CameraViewTest extends Application {
     public void start(Stage stage) throws Exception {
 
         loadSubScene();
-        root.setStyle("-fx-background-color: DEEPSKYBLUE;");
+        root.setStyle("-fx-background-color: BLUE;");
         Scene scene = new Scene(root, 810, 610, true, SceneAntialiasing.BALANCED);
         scene.setFill(Color.TRANSPARENT);
 
@@ -86,11 +84,11 @@ public class CameraViewTest extends Application {
         light.setTranslateZ(camera.getTranslateZ());
         worldRoot.getChildren().add(cameraTransform);
 
-        SubScene scene = new SubScene(worldRoot, 800, 600, true, SceneAntialiasing.BALANCED);
-        scene.setFill(Color.DARKSLATEGRAY);
-        scene.setCamera(camera);
+        SubScene subScene = new SubScene(worldRoot, 800, 600, true, SceneAntialiasing.BALANCED);
+        subScene.setFill(Color.DARKSLATEGRAY);
+        subScene.setCamera(camera);
         //First person shooter keyboard movement 
-        scene.setOnKeyPressed(event -> {
+        subScene.setOnKeyPressed(event -> {
             double change = 10.0;
             //Add shift modifier to simulate "Running Speed" 
             if (event.isShiftDown()) {
@@ -114,14 +112,14 @@ public class CameraViewTest extends Application {
             }
         });
 
-        scene.setOnMousePressed((MouseEvent me) -> {
+        subScene.setOnMousePressed((MouseEvent me) -> {
             mousePosX = me.getSceneX();
             mousePosY = me.getSceneY();
             mouseOldX = me.getSceneX();
             mouseOldY = me.getSceneY();
 
         });
-        scene.setOnMouseDragged((MouseEvent me) -> {
+        subScene.setOnMouseDragged((MouseEvent me) -> {
             mouseOldX = mousePosX;
             mouseOldY = mousePosY;
             mousePosX = me.getSceneX();
@@ -151,11 +149,11 @@ public class CameraViewTest extends Application {
 
             }
         });
-        root.getChildren().add(scene);
-        scene.widthProperty().bind(root.widthProperty());
-        scene.heightProperty().bind(root.heightProperty());
+        root.getChildren().add(subScene);
+        subScene.widthProperty().bind(root.widthProperty());
+        subScene.heightProperty().bind(root.heightProperty());
 
-        cameraView = new CameraView(scene);
+        cameraView = new CameraView(subScene);
         cameraView.setFirstPersonNavigationEabled(true);
         cameraView.setFitWidth(350);
         cameraView.setFitHeight(225);
@@ -167,7 +165,7 @@ public class CameraViewTest extends Application {
         StackPane.setAlignment(cameraView, Pos.BOTTOM_RIGHT);
         StackPane.setMargin(cameraView, new Insets(5));
 
-        //Add an aritrary object to scene 
+        //Add an aritrary object to scene
         int rDivs = 32, tDivs = 32;
         double rad = 600, trad = 400;
         TorusMesh torus = new TorusMesh(rDivs, tDivs, rad, trad);
@@ -181,7 +179,7 @@ public class CameraViewTest extends Application {
 
         final Timeline t = new Timeline();
         t.getKeyFrames().addAll(new KeyFrame[]{
-                new KeyFrame(Duration.seconds(5), new KeyValue[]{// Frame End                 
+                new KeyFrame(Duration.seconds(5), new KeyValue[]{// Frame End
                         new KeyValue(torus.tubeStartAngleOffsetProperty(), torus.getTubeStartAngleOffset() - 10, Interpolator.EASE_BOTH),
                         new KeyValue(torus.xOffsetProperty(), torus.getxOffset() + 0.5, Interpolator.EASE_BOTH),
                         new KeyValue(torus.yOffsetProperty(), torus.getyOffset() + 0.5, Interpolator.EASE_BOTH),
