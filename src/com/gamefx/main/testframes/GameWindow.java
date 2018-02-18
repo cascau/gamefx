@@ -73,7 +73,7 @@ public class GameWindow extends Application implements Constants {
     protected final CameraTransform axisGroup = new CameraTransform();
     protected final CameraTransform moleculeGroup = new CameraTransform();
     protected final CameraTransform world = new CameraTransform();
-    protected final PerspectiveCamera camera = new PerspectiveCamera(false);
+    protected final PerspectiveCamera camera = new PerspectiveCamera(true);
     protected final CameraTransform cameraXForm = new CameraTransform();
     protected final CameraTransform cameraXForm2 = new CameraTransform();
     protected final CameraTransform cameraXForm3 = new CameraTransform();
@@ -136,7 +136,7 @@ public class GameWindow extends Application implements Constants {
 
     protected void initWorld() {
 
-        EngineUtils.buildAxes(centerPane, axisGroup);
+        EngineUtils.buildAxes(axisGroup);
         buildCamera();
 
         gameScene.setCamera(camera);
@@ -148,7 +148,7 @@ public class GameWindow extends Application implements Constants {
         dummy.setTranslateX(dummy.getTranslateX() + dummy.getWidth()/2);
         dummy.setTranslateY(dummy.getTranslateY() + dummy.getHeight()/2);
         dummy.setTranslateZ(-(dummy.getTranslateZ() + dummy.getDepth()/2));
-        centerPane.getChildren().add(dummy);
+        centerPane.getChildren().addAll(dummy, axisGroup);
 
         handleMouse(gameScene, root);
         handleKeyboard(gameScene, root);

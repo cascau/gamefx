@@ -1,1 +1,17 @@
 camera.setTranslateZ(CAMERA_INITIAL_DISTANCE); // zooms the camera to the value
+
+
+Add camera transforms to camera with pivots in the center of the Node (box)
+// to Set pivot points
+rotateX.setPivotX(boxCenterX);
+rotateX.setPivotY(boxCenterY);
+rotateX.setPivotZ(boxCenterZ);
+rotateY.setPivotX(boxCenterX);
+rotateY.setPivotY(boxCenterY);
+rotateY.setPivotZ(boxCenterZ));
+rotateZ.setPivotX(boxCenterX);
+rotateZ.setPivotY(boxCenterY);
+rotateZ.setPivotZ(boxCenterZ));
+// initialize the camera
+PerspectiveCamera camera = new PerspectiveCamera(false);
+camera.getTransforms().addAll (rotateX, rotateY, new Translate(0, 0, 0));
