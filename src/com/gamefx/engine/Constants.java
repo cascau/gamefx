@@ -11,8 +11,11 @@ package com.gamefx.engine;
 public interface Constants {
 
 
-    int GRID_SQUARES_X = 50;
-    int GRID_SQUARES_Y = 50;
+    double GRID_SQUARES_X = 50;
+    double GRID_SQUARES_Y = 50;
+    double GRID_SQUARE_LENGTH = 20;
+    double BOARD_SIZE_X = GRID_SQUARES_X * GRID_SQUARE_LENGTH;
+    double BOARD_SIZE_Y = GRID_SQUARES_Y * GRID_SQUARE_LENGTH;
 
     double CAMERA_INITIAL_DISTANCE = -450;
     double CAMERA_INITIAL_X_ANGLE = 180.0;

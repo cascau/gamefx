@@ -9,6 +9,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
@@ -16,6 +17,7 @@ import javafx.stage.Stage;
 import static com.gamefx.engine.Constants.*;
 
 public class rotate3Dwithpanel extends Application {
+
     private double mouseOldX, mouseOldY = 0, mousePosX = 0, mousePosY = 0, mouseDeltaX = 0, mouseDeltaY = 0, modifier = 10;
     private Rotate rotateX = new Rotate(0, Rotate.X_AXIS);
     private Rotate rotateY = new Rotate(0, Rotate.Y_AXIS);
@@ -25,51 +27,50 @@ public class rotate3Dwithpanel extends Application {
     protected final CameraTransform cameraXForm3 = new CameraTransform();
     protected final CameraTransform axisGroup = new CameraTransform();
 
-    private Rectangle gameBoard = new Rectangle();
+    Group subRoot;
+    SubScene subScene;
+
+    private Rectangle gameBoard = new Rectangle(BOARD_SIZE_X, BOARD_SIZE_Y);
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         final PhongMaterial redMaterial = new PhongMaterial();
         redMaterial.setSpecularColor(Color.ORANGE);
         redMaterial.setDiffuseColor(Color.RED);
 
-        Box myBox = new Box(100, 100, 100);
-        myBox.setTranslateX(400);
-        myBox.setTranslateY(300);
-        myBox.setTranslateZ(-400);
+        Box myBox = new Box(20, 20, 40);
+        myBox.setTranslateX(500);
+        myBox.setTranslateY(500);
+        myBox.setTranslateZ(1);
         myBox.setMaterial(redMaterial);
 
-        gameBoard.setWidth(1000);
-        gameBoard.setHeight(1000);
-        gameBoard.setTranslateX(100);
-        gameBoard.setTranslateY(100);
         gameBoard.setFill(Color.DARKGRAY);
 
         EngineUtils.buildAxes(axisGroup);
 
         Rectangle minimap = new Rectangle();
-        minimap.setX(200);
-        minimap.setY(600);
+        minimap.setX(0);
+        minimap.setY(0);
         minimap.setWidth(300);
         minimap.setHeight(300);
         minimap.setFill(Color.GREY);
         AnchorPane minimapAnchor = new AnchorPane(minimap);
-        AnchorPane.setBottomAnchor(minimap, 0.0);
-        AnchorPane.setRightAnchor(minimap, 0.0);
+        AnchorPane.setBottomAnchor(minimapAnchor, 0.0);
+        AnchorPane.setRightAnchor(minimapAnchor, 0.0);
 
 
         // to Set pivot points
-        rotateX.setPivotX(400);
-        rotateX.setPivotY(300);
-        rotateX.setPivotZ(400);
-
-        rotateY.setPivotX(400);
-        rotateY.setPivotY(300);
-        rotateY.setPivotZ(400);
-
-        rotateZ.setPivotX(400);
-        rotateZ.setPivotY(300);
-        rotateZ.setPivotZ(400);
+//        rotateX.setPivotX(400);
+//        rotateX.setPivotY(300);
+//        rotateX.setPivotZ(400);
+//
+//        rotateY.setPivotX(400);
+//        rotateY.setPivotY(300);
+//        rotateY.setPivotZ(400);
+//
+//        rotateZ.setPivotX(400);
+//        rotateZ.setPivotY(300);
+//        rotateZ.setPivotZ(400);
 
 
         // initialize the camera
@@ -80,16 +81,18 @@ public class rotate3Dwithpanel extends Application {
         camera.setTranslateZ(-2000);
 
         Group root = new Group();
-        Group subRoot = new Group();
+        subRoot = new Group();
 
 
-        Scene scene = new Scene(root, 1600, 1000, true);
-        SubScene subScene = new SubScene(subRoot, 1600, 1000, true, SceneAntialiasing.BALANCED);
+        Scene scene = new Scene(root, 1600, 1000, false);
+        subScene = new SubScene(subRoot, 1600, 1000, true, SceneAntialiasing.BALANCED);
 
         root.getChildren().add(subScene);
 
         subScene.setCamera(camera);
         subRoot.getChildren().addAll(myBox, gameBoard, axisGroup);
+        subRoot.setTranslateX(350);
+        subRoot.setTranslateY(50);
         root.getChildren().add(minimapAnchor);
 
         root.getChildren().add(cameraXForm);
@@ -101,7 +104,7 @@ public class rotate3Dwithpanel extends Application {
         camera.setFarClip(CAMERA_FAR_CLIP);
         camera.setTranslateZ(CAMERA_INITIAL_DISTANCE);
 //        cameraXForm.ry.setAngle(30);
-//        cameraXForm.rx.setAngle(30);
+        cameraXForm.rx.setAngle(30);
 //        cameraXForm.rz.setAngle(30);
 
         // events for rotation
@@ -133,10 +136,10 @@ public class rotate3Dwithpanel extends Application {
 //                rotateX.setPivotX(subScene.getWidth() / 2);
 //                rotateY.setPivotY(subScene.getHeight() / 2);
 
-                rotateX.setAngle(rotateX.getAngle() - (event.getSceneX() - mouseOldX));
-                rotateZ.setAngle(rotateZ.getAngle() + (event.getSceneX() - mouseOldX));
-                mouseOldX = event.getSceneX();
-                mouseOldY = event.getSceneY();
+//                rotateX.setAngle(rotateX.getAngle() - (event.getSceneX() - mouseOldX));
+//                rotateZ.setAngle(rotateZ.getAngle() + (event.getSceneX() - mouseOldX));
+//                mouseOldX = event.getSceneX();
+//                mouseOldY = event.getSceneY();
             }
         });
 
@@ -152,16 +155,39 @@ public class rotate3Dwithpanel extends Application {
             if (deltaY < 0) {
                 zoomFactor = 2.0 - zoomFactor;
             }
-            gameBoard.setScaleX(gameBoard.getScaleX() * zoomFactor);
-            gameBoard.setScaleY(gameBoard.getScaleY() * zoomFactor);
+            subScene.setScaleX(subScene.getScaleX() * zoomFactor);
+            subScene.setScaleY(subScene.getScaleY() * zoomFactor);
             event.consume();
 //            camera.setTranslateZ(CAMERA_INITIAL_DISTANCE);
         });
 
-        stage.setTitle("JavaFX 3D Object");
+        drawLinesOnGameBoard();
+
+        stage.setTitle("3D Prototype");
         stage.setMaximized(true);
         stage.setScene(scene);
         stage.show();
+    }
+
+    public void drawLinesOnGameBoard() {
+
+        //draw vertical lines
+        for (int i=0; i<GRID_SQUARES_X; i++) {
+            // draw a line from
+            // [i*squareLength; 0] to
+            // [i*squareLength; boardSizeX]
+            Line line = new Line(i * GRID_SQUARE_LENGTH, 0, i * GRID_SQUARE_LENGTH, BOARD_SIZE_X);
+            subRoot.getChildren().add(line);
+
+        }
+        for (int i=0; i<GRID_SQUARES_X; i++) {
+            // draw a horizontal line from
+            // [0; i*squareLength] to
+            // [boardSizeY; i*squareLength]
+            Line line = new Line(0, i * GRID_SQUARE_LENGTH, BOARD_SIZE_Y, i * GRID_SQUARE_LENGTH);
+            subRoot.getChildren().add(line);
+
+        }
     }
 
     public static void main(String[] args) {
