@@ -85,7 +85,7 @@ public class CameraViewTest extends Application {
         worldRoot.getChildren().add(cameraTransform);
 
         SubScene subScene = new SubScene(worldRoot, 800, 600, true, SceneAntialiasing.BALANCED);
-        subScene.setFill(Color.DARKSLATEGRAY);
+        subScene.setFill(Color.WHITE);
         subScene.setCamera(camera);
         //First person shooter keyboard movement 
         subScene.setOnKeyPressed(event -> {

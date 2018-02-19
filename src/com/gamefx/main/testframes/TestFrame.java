@@ -43,7 +43,7 @@ import javafx.util.Duration;
 
 import java.util.List;
 
-public class GameWindow extends Application implements Constants {
+public class TestFrame extends Application implements Constants {
 
     protected Scene gameScene;
 
@@ -73,7 +73,7 @@ public class GameWindow extends Application implements Constants {
     protected final CameraTransform axisGroup = new CameraTransform();
     protected final CameraTransform moleculeGroup = new CameraTransform();
     protected final CameraTransform world = new CameraTransform();
-    protected final PerspectiveCamera camera = new PerspectiveCamera(true);
+    protected final PerspectiveCamera camera = new PerspectiveCamera(false);
     protected final CameraTransform cameraXForm = new CameraTransform();
     protected final CameraTransform cameraXForm2 = new CameraTransform();
     protected final CameraTransform cameraXForm3 = new CameraTransform();
