@@ -1,33 +1,18 @@
 package com.gamefx.main.testframes;
 
-import com.gamefx.engine.CameraTransform;
-import com.gamefx.engine.CameraView;
-import com.gamefx.engine.components.TorusMesh;
-import javafx.animation.Animation;
-import javafx.animation.Interpolator;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
+import com.gamefx.camera.CameraTransform;
+import com.gamefx.camera.CameraView;
 import javafx.application.Application;
-
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.PointLight;
-import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
-import javafx.scene.SubScene;
+import javafx.scene.*;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.DrawMode;
 import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 /**
  * @author Dub
@@ -168,30 +153,30 @@ public class CameraViewTest extends Application {
         //Add an aritrary object to scene
         int rDivs = 32, tDivs = 32;
         double rad = 600, trad = 400;
-        TorusMesh torus = new TorusMesh(rDivs, tDivs, rad, trad);
-        torus.setDrawMode(DrawMode.LINE);
-        PhongMaterial mat = new PhongMaterial(Color.BLUEVIOLET);
-        torus.setMaterial(mat);
-        torus.setTranslateX(0);
-        torus.setTranslateY(0);
-        torus.setTranslateZ(0);
-        worldRoot.getChildren().add(torus);
-
-        final Timeline t = new Timeline();
-        t.getKeyFrames().addAll(new KeyFrame[]{
-                new KeyFrame(Duration.seconds(5), new KeyValue[]{// Frame End
-                        new KeyValue(torus.tubeStartAngleOffsetProperty(), torus.getTubeStartAngleOffset() - 10, Interpolator.EASE_BOTH),
-                        new KeyValue(torus.xOffsetProperty(), torus.getxOffset() + 0.5, Interpolator.EASE_BOTH),
-                        new KeyValue(torus.yOffsetProperty(), torus.getyOffset() + 0.5, Interpolator.EASE_BOTH),
-                        new KeyValue(torus.zOffsetProperty(), torus.getzOffset() + 2, Interpolator.EASE_BOTH),
-                        new KeyValue(torus.tubeDivisionsProperty(), 120, Interpolator.EASE_BOTH),
-                        new KeyValue(torus.radiusDivisionsProperty(), 120, Interpolator.EASE_BOTH),
-                        new KeyValue(torus.tubeRadiusProperty(), 400, Interpolator.EASE_BOTH),
-                })
-        });
-        t.setCycleCount(Animation.INDEFINITE);
-        t.setAutoReverse(true);
-        t.playFromStart();
+//        TorusMesh torus = new TorusMesh(rDivs, tDivs, rad, trad);
+//        torus.setDrawMode(DrawMode.LINE);
+//        PhongMaterial mat = new PhongMaterial(Color.BLUEVIOLET);
+//        torus.setMaterial(mat);
+//        torus.setTranslateX(0);
+//        torus.setTranslateY(0);
+//        torus.setTranslateZ(0);
+//        worldRoot.getChildren().add(torus);
+//
+//        final Timeline t = new Timeline();
+//        t.getKeyFrames().addAll(new KeyFrame[]{
+//                new KeyFrame(Duration.seconds(5), new KeyValue[]{// Frame End
+//                        new KeyValue(torus.tubeStartAngleOffsetProperty(), torus.getTubeStartAngleOffset() - 10, Interpolator.EASE_BOTH),
+//                        new KeyValue(torus.xOffsetProperty(), torus.getxOffset() + 0.5, Interpolator.EASE_BOTH),
+//                        new KeyValue(torus.yOffsetProperty(), torus.getyOffset() + 0.5, Interpolator.EASE_BOTH),
+//                        new KeyValue(torus.zOffsetProperty(), torus.getzOffset() + 2, Interpolator.EASE_BOTH),
+//                        new KeyValue(torus.tubeDivisionsProperty(), 120, Interpolator.EASE_BOTH),
+//                        new KeyValue(torus.radiusDivisionsProperty(), 120, Interpolator.EASE_BOTH),
+//                        new KeyValue(torus.tubeRadiusProperty(), 400, Interpolator.EASE_BOTH),
+//                })
+//        });
+//        t.setCycleCount(Animation.INDEFINITE);
+//        t.setAutoReverse(true);
+//        t.playFromStart();
     }
 
     /**

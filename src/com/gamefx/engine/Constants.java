@@ -11,8 +11,8 @@ package com.gamefx.engine;
 public interface Constants {
 
 
-    double GRID_SQUARES_X = 50;
-    double GRID_SQUARES_Y = 50;
+    double GRID_SQUARES_X = 100;
+    double GRID_SQUARES_Y = 100;
     double GRID_SQUARE_LENGTH = 20;
     double BOARD_SIZE_X = GRID_SQUARES_X * GRID_SQUARE_LENGTH;
     double BOARD_SIZE_Y = GRID_SQUARES_Y * GRID_SQUARE_LENGTH;
@@ -24,10 +24,8 @@ public interface Constants {
     double CAMERA_NEAR_CLIP = 0.1;
     double CAMERA_FAR_CLIP = 10000.0;
     double AXIS_LENGTH = 250.0;
-    double HYDROGEN_ANGLE = 104.5;
-    double CONTROL_MULTIPLIER = 0.1;
-    double SHIFT_MULTIPLIER = 10.0;
     double MOUSE_SPEED = 0.1;
     double ROTATION_SPEED = 2.0;
     double TRACK_SPEED = 0.3;
+    double MODIFIER = 10;
 }

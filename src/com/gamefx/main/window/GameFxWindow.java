@@ -1,74 +1,64 @@
 package com.gamefx.main.window;
 
-import com.gamefx.engine.CameraTransform;
-import com.gamefx.engine.CameraView;
-import com.gamefx.engine.EngineUtils;
+import com.gamefx.camera.CameraDelegate;
+import com.gamefx.engine.EngineDelegate;
+import com.gamefx.engine.components.GameObject;
 import javafx.application.Application;
-import javafx.scene.*;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
+import javafx.scene.SubScene;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Box;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.transform.Rotate;
 import javafx.stage.Stage;
 
 import static com.gamefx.engine.Constants.*;
 
 public class GameFxWindow extends Application {
 
-    private double mouseOldX, mouseOldY = 0, mousePosX = 0, mousePosY = 0, mouseDeltaX = 0, mouseDeltaY = 0, modifier = 10;
-    private Rotate rotateX = new Rotate(0, Rotate.X_AXIS);
-    private Rotate rotateY = new Rotate(0, Rotate.Y_AXIS);
-    private Rotate rotateZ = new Rotate(0, Rotate.Z_AXIS);
-    protected final CameraTransform cameraXForm = new CameraTransform();
-    protected final CameraTransform cameraXForm2 = new CameraTransform();
-    protected final CameraTransform cameraXForm3 = new CameraTransform();
-    protected final CameraTransform axisGroup = new CameraTransform();
+    public static void main(String[] args) {
+        launch(args);
+    }
 
-    Group subRoot;
-    SubScene subScene;
-    private CameraView cameraView;
+    EngineDelegate engineDelegate;
+    CameraDelegate cameraDelegate;
+
+    public double mouseOldX, mouseOldY = 0, mousePosX = 0, mousePosY = 0, mouseDeltaX = 0, mouseDeltaY = 0;
+
+    Group subRootGroup = new Group();
+    SubScene gameScene;
+    Group rootGroup = new Group();
 
     private Rectangle gameBoard = new Rectangle(BOARD_SIZE_X, BOARD_SIZE_Y);
 
     @Override
     public void start(Stage stage) {
+
+        engineDelegate = new EngineDelegate();
+
         final PhongMaterial redMaterial = new PhongMaterial();
         redMaterial.setSpecularColor(Color.ORANGE);
         redMaterial.setDiffuseColor(Color.RED);
 
-        Box myBox = new Box(20, 20, 40);
-        myBox.setTranslateX(500);
-        myBox.setTranslateY(500);
-        myBox.setTranslateZ(1);
-        myBox.setMaterial(redMaterial);
+        GameObject player = new GameObject();
+        player.setTranslateX(500 + GRID_SQUARE_LENGTH / 2);
+        player.setTranslateY(500 + GRID_SQUARE_LENGTH / 2);
+        player.setMaterial(redMaterial);
 
         gameBoard.setFill(Color.DARKGRAY);
 
-        EngineUtils.buildAxes(axisGroup);
+        Scene scene = new Scene(rootGroup, 1600, 1000, false, SceneAntialiasing.BALANCED);
+
+        gameScene = new SubScene(subRootGroup, 1600, 1000, true, SceneAntialiasing.BALANCED);
 
         // initialize the camera
-        PerspectiveCamera camera = new PerspectiveCamera(false);
-        camera.getTransforms().addAll(rotateX, rotateY, rotateZ);
-        camera.setNearClip(0.1);
-        camera.setFarClip(10000.0);
-        camera.setTranslateZ(-2000);
+        cameraDelegate = new CameraDelegate(gameScene);
+        cameraDelegate.initCamera();
 
-        Group root = new Group();
-        subRoot = new Group();
-        Scene scene = new Scene(root, 1000, 1000, false);
-        subScene = new SubScene(subRoot, 1000, 1000, true, SceneAntialiasing.BALANCED);
-
-        cameraView = new CameraView(subScene);
-        cameraView.setFirstPersonNavigationEabled(true);
-        cameraView.setX(0);
-        cameraView.setY(0);
-        cameraView.setScaleX(300);
-        cameraView.setScaleY(300);
-        cameraView.setScaleZ(1);
 
         Rectangle minimap = new Rectangle();
         minimap.setX(0);
@@ -77,40 +67,30 @@ public class GameFxWindow extends Application {
         minimap.setHeight(300);
         minimap.setFill(Color.GREY);
         AnchorPane minimapAnchor = new AnchorPane(minimap);
-//        AnchorPane minimapAnchor = new AnchorPane(cameraView);
+//        AnchorPane minimapAnchor = new AnchorPane(cameraDelegate.cameraView);
         AnchorPane.setBottomAnchor(minimapAnchor, 1.0);
         AnchorPane.setRightAnchor(minimapAnchor, 1.0);
 
 
-        root.getChildren().add(subScene);
+        rootGroup.getChildren().add(gameScene);
 
-        subScene.setCamera(camera);
-        subRoot.getChildren().addAll(myBox, gameBoard, axisGroup);
-        subRoot.setTranslateX(350);
-        subRoot.setTranslateY(50);
-        root.getChildren().add(minimapAnchor);
+        gameScene.setCamera(cameraDelegate.camera);
+        subRootGroup.getChildren().addAll(player, gameBoard, engineDelegate.buildAxes());
+        subRootGroup.setTranslateX(350);
+        subRootGroup.setTranslateY(50);
+        rootGroup.getChildren().add(minimapAnchor);
 
-        root.getChildren().add(cameraXForm);
-        cameraXForm.getChildren().add(cameraXForm2);
-        cameraXForm2.getChildren().add(cameraXForm3);
-        cameraXForm3.getChildren().add(camera);
-
-        camera.setNearClip(CAMERA_NEAR_CLIP);
-        camera.setFarClip(CAMERA_FAR_CLIP);
-        camera.setTranslateZ(CAMERA_INITIAL_DISTANCE);
-//        cameraXForm.ry.setAngle(30);
-        cameraXForm.rx.setAngle(30);
-//        cameraXForm.rz.setAngle(30);
+        rootGroup.getChildren().add(cameraDelegate.cameraXForm);
 
         // events for rotation
-        root.setOnMousePressed(event -> {
+        rootGroup.setOnMousePressed(event -> {
             mouseOldX = event.getSceneX();
             mouseOldY = event.getSceneY();
             mousePosX = event.getSceneX();
             mousePosY = event.getSceneY();
         });
 
-        subScene.setOnMouseDragged(event -> {
+        gameScene.setOnMouseDragged(event -> {
             mouseOldX = mousePosX;
             mouseOldY = mousePosY;
             mousePosX = event.getSceneX();
@@ -119,31 +99,19 @@ public class GameFxWindow extends Application {
             mouseDeltaY = (mousePosY - mouseOldY);
 
             if (event.isPrimaryButtonDown()) {
-
-                cameraXForm2.t.setX(cameraXForm2.t.getX() - mouseDeltaX * MOUSE_SPEED * modifier * TRACK_SPEED * 10);
-                cameraXForm2.t.setY(cameraXForm2.t.getY() - mouseDeltaY * MOUSE_SPEED * modifier * TRACK_SPEED * 10);
+                cameraDelegate.moveGameBoard(mouseDeltaX, mouseDeltaY);
 
             } else if (event.isSecondaryButtonDown()) {
-                System.out.println("mouseDeltaX " + mouseDeltaX + "  mouseDeltaY " + mouseDeltaY);
-//                cameraXForm.ry.setAngle(cameraXForm.ry.getAngle() - mouseDeltaX * MOUSE_SPEED * modifier * ROTATION_SPEED * 0.2);
-                cameraXForm.rx.setAngle(cameraXForm.rx.getAngle() + (mouseDeltaX + mouseDeltaY) * MOUSE_SPEED * modifier * ROTATION_SPEED * 0.2);
+                if (event.isControlDown()) {
+                    cameraDelegate.rotateGameBoardPivotInCenter(mouseDeltaX, mouseDeltaY);
+                } else {
+                    cameraDelegate.rotateGameBoardOnAxisX(mouseDeltaX, mouseDeltaY);
+                }
             }
-        });
-
-        minimap.setOnMousePressed(event -> {
-            double x = minimap.getX() - event.getSceneX();
-            double y = minimap.getY() - event.getSceneY();
-
-//            System.out.println(x + " " + y);
         });
 
         minimap.setOnScroll((ScrollEvent event) -> {
-            double zoomFactor = 1.05;
-            double deltaY = event.getDeltaY();
-            if (deltaY < 0) {
-                zoomFactor = 2.0 - zoomFactor;
-            }
-            camera.setTranslateZ(camera.getTranslateZ() * zoomFactor);
+            cameraDelegate.zoomCamera(event.getDeltaY());
             event.consume();
         });
 
@@ -156,17 +124,22 @@ public class GameFxWindow extends Application {
             mouseDeltaX = (mousePosX - mouseOldX);
             mouseDeltaY = (mousePosY - mouseOldY);
 
-            cameraXForm2.t.setX(cameraXForm2.t.getX() - mouseDeltaX * MOUSE_SPEED * modifier * TRACK_SPEED * modifier);
-            cameraXForm2.t.setY(cameraXForm2.t.getY() - mouseDeltaY * MOUSE_SPEED * modifier * TRACK_SPEED * modifier);
+            if (event.isPrimaryButtonDown()) {
+
+                cameraDelegate.moveGameBoard(mouseDeltaX, mouseDeltaY);
+
+            } else if (event.isSecondaryButtonDown()) {
+
+                cameraDelegate.rotateGameBoardOnAxisX(mouseDeltaX, mouseDeltaY);
+            }
         });
 
-        subScene.setOnScroll((ScrollEvent event) -> {
-            double zoomFactor = 1.05;
-            double deltaY = event.getDeltaY();
-            if (deltaY < 0) {
-                zoomFactor = 2.0 - zoomFactor;
-            }
-            camera.setTranslateZ(camera.getTranslateZ() * zoomFactor);
+        gameScene.setOnScroll((ScrollEvent event) -> {
+            mousePosX = event.getSceneX();
+            mousePosY = event.getSceneY();
+            double zoomFactor = event.getDeltaY() > 0 ? 1.05 : 0.95;
+//            cameraDelegate.zoomCamera(event.getDeltaY());
+            cameraDelegate.zoomNodeAnimated(subRootGroup, mousePosX, mousePosY, zoomFactor);
             event.consume();
         });
 
@@ -186,7 +159,7 @@ public class GameFxWindow extends Application {
             // [i*squareLength; 0] to
             // [i*squareLength; boardSizeX]
             Line line = new Line(i * GRID_SQUARE_LENGTH, 0, i * GRID_SQUARE_LENGTH, BOARD_SIZE_X);
-            subRoot.getChildren().add(line);
+            subRootGroup.getChildren().add(line);
 
         }
         for (int i = 0; i < GRID_SQUARES_X; i++) {
@@ -194,13 +167,8 @@ public class GameFxWindow extends Application {
             // [0; i*squareLength] to
             // [boardSizeY; i*squareLength]
             Line line = new Line(0, i * GRID_SQUARE_LENGTH, BOARD_SIZE_Y, i * GRID_SQUARE_LENGTH);
-            subRoot.getChildren().add(line);
+            subRootGroup.getChildren().add(line);
 
         }
     }
-
-    public static void main(String[] args) {
-        launch(args);
-    }
-
 }
