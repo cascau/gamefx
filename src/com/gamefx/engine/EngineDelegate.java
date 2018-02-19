@@ -6,17 +6,33 @@
 package com.gamefx.engine;
 
 import com.gamefx.camera.CameraTransform;
+import javafx.scene.Group;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
+import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
 
-import static com.gamefx.engine.Constants.AXIS_LENGTH;
+import static com.gamefx.engine.Constants.*;
 
 /**
  *
  * @author cascau
  */
 public class EngineDelegate {
+
+    public Rectangle buildMinimap () {
+
+        Rectangle minimap = new Rectangle();
+        minimap.setX(0);
+        minimap.setY(0);
+        minimap.setWidth(300);
+        minimap.setHeight(300);
+        minimap.setFill(Color.TRANSPARENT);
+        minimap.setStroke(Color.BLACK);
+
+        return minimap;
+    }
 
     public CameraTransform buildAxes() {
         System.out.println("buildAxes()");
@@ -46,5 +62,27 @@ public class EngineDelegate {
         axisGroup.setVisible(true);
 
         return axisGroup;
+    }
+
+
+    public void drawLinesOnGameBoard(Group subRootGroup) {
+
+        //draw vertical lines
+        for (int i = 0; i < GRID_SQUARES_X; i++) {
+            // draw a line from
+            // [i*squareLength; 0] to
+            // [i*squareLength; boardSizeX]
+            Line line = new Line(i * GRID_SQUARE_LENGTH, 0, i * GRID_SQUARE_LENGTH, BOARD_SIZE_X);
+            subRootGroup.getChildren().add(line);
+
+        }
+        for (int i = 0; i < GRID_SQUARES_X; i++) {
+            // draw a horizontal line from
+            // [0; i*squareLength] to
+            // [boardSizeY; i*squareLength]
+            Line line = new Line(0, i * GRID_SQUARE_LENGTH, BOARD_SIZE_Y, i * GRID_SQUARE_LENGTH);
+            subRootGroup.getChildren().add(line);
+
+        }
     }
 }

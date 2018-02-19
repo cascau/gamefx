@@ -33,10 +33,15 @@ public class CameraDelegate {
 
         camera.setNearClip(CAMERA_NEAR_CLIP);
         camera.setFarClip(CAMERA_FAR_CLIP);
-        camera.setTranslateZ(CAMERA_INITIAL_DISTANCE);
-//        cameraXForm.ry.setAngle(30);
-        cameraXForm.rx.setAngle(30);
-//        cameraXForm.rz.setAngle(30);
+
+        camera.setTranslateX(CAMERA_INITIAL_DISTANCE_X);
+        camera.setTranslateY(CAMERA_INITIAL_DISTANCE_Y);
+        camera.setTranslateZ(CAMERA_INITIAL_DISTANCE_Z);
+
+        cameraXForm.rx.setAngle(CAMERA_INITIAL_X_ANGLE);
+//        cameraXForm.ry.setAngle(CAMERA_INITIAL_Y_ANGLE);
+//        cameraXForm.rz.setAngle(CAMERA_INITIAL_Z_ANGLE);
+
 
         //add a Point Light for better viewing of the grid coordinate system
         PointLight light = new PointLight(Color.BLUE);

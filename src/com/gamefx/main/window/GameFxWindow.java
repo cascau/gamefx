@@ -9,10 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
@@ -27,50 +24,47 @@ public class GameFxWindow extends Application {
     EngineDelegate engineDelegate;
     CameraDelegate cameraDelegate;
 
+    GameObject player;
+
     public double mouseOldX, mouseOldY = 0, mousePosX = 0, mousePosY = 0, mouseDeltaX = 0, mouseDeltaY = 0;
 
-    Group subRootGroup = new Group();
+    Scene mainScene;
     SubScene gameScene;
-    Group rootGroup = new Group();
 
-    private Rectangle gameBoard = new Rectangle(BOARD_SIZE_X, BOARD_SIZE_Y);
+    Group rootGroup;
+    Group subRootGroup;
+
+    Rectangle gameBoard;
+    Rectangle minimap;
 
     @Override
     public void start(Stage stage) {
 
         engineDelegate = new EngineDelegate();
 
-        final PhongMaterial redMaterial = new PhongMaterial();
-        redMaterial.setSpecularColor(Color.ORANGE);
-        redMaterial.setDiffuseColor(Color.RED);
+        rootGroup = new Group();
+        mainScene = new Scene(rootGroup, 1600, 1000, false, SceneAntialiasing.BALANCED);
 
-        GameObject player = new GameObject();
-        player.setTranslateX(500 + GRID_SQUARE_LENGTH / 2);
-        player.setTranslateY(500 + GRID_SQUARE_LENGTH / 2);
-        player.setMaterial(redMaterial);
-
-        gameBoard.setFill(Color.DARKGRAY);
-
-        Scene scene = new Scene(rootGroup, 1600, 1000, false, SceneAntialiasing.BALANCED);
-
+        subRootGroup = new Group();
         gameScene = new SubScene(subRootGroup, 1600, 1000, true, SceneAntialiasing.BALANCED);
+
+
+        gameBoard = new Rectangle(BOARD_SIZE_X, BOARD_SIZE_Y);
+        gameBoard.setFill(Color.DARKGRAY);
 
         // initialize the camera
         cameraDelegate = new CameraDelegate(gameScene);
         cameraDelegate.initCamera();
 
 
-        Rectangle minimap = new Rectangle();
+        minimap = new Rectangle();
         minimap.setX(0);
         minimap.setY(0);
         minimap.setWidth(300);
         minimap.setHeight(300);
         minimap.setFill(Color.GREY);
-        AnchorPane minimapAnchor = new AnchorPane(minimap);
-//        AnchorPane minimapAnchor = new AnchorPane(cameraDelegate.cameraView);
-        AnchorPane.setBottomAnchor(minimapAnchor, 1.0);
-        AnchorPane.setRightAnchor(minimapAnchor, 1.0);
 
+        buildAndPlacePlayer();
 
         rootGroup.getChildren().add(gameScene);
 
@@ -78,7 +72,7 @@ public class GameFxWindow extends Application {
         subRootGroup.getChildren().addAll(player, gameBoard, engineDelegate.buildAxes());
         subRootGroup.setTranslateX(350);
         subRootGroup.setTranslateY(50);
-        rootGroup.getChildren().add(minimapAnchor);
+        rootGroup.getChildren().add(minimap);
 
         rootGroup.getChildren().add(cameraDelegate.cameraXForm);
 
@@ -143,32 +137,19 @@ public class GameFxWindow extends Application {
             event.consume();
         });
 
-        drawLinesOnGameBoard();
+        engineDelegate.drawLinesOnGameBoard(subRootGroup);
 
         stage.setTitle("3D Prototype");
         stage.setMaximized(true);
-        stage.setScene(scene);
+        stage.setScene(mainScene);
         stage.show();
     }
 
-    public void drawLinesOnGameBoard() {
+    private void buildAndPlacePlayer() {
 
-        //draw vertical lines
-        for (int i = 0; i < GRID_SQUARES_X; i++) {
-            // draw a line from
-            // [i*squareLength; 0] to
-            // [i*squareLength; boardSizeX]
-            Line line = new Line(i * GRID_SQUARE_LENGTH, 0, i * GRID_SQUARE_LENGTH, BOARD_SIZE_X);
-            subRootGroup.getChildren().add(line);
 
-        }
-        for (int i = 0; i < GRID_SQUARES_X; i++) {
-            // draw a horizontal line from
-            // [0; i*squareLength] to
-            // [boardSizeY; i*squareLength]
-            Line line = new Line(0, i * GRID_SQUARE_LENGTH, BOARD_SIZE_Y, i * GRID_SQUARE_LENGTH);
-            subRootGroup.getChildren().add(line);
-
-        }
+        player = new GameObject();
+        player.setTranslateX(500 + GRID_SQUARE_LENGTH / 2);
+        player.setTranslateY(500 + GRID_SQUARE_LENGTH / 2);
     }
 }
