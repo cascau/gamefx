@@ -141,13 +141,17 @@ public class GameFxWindow extends Application {
             double sceneX = event.getSceneX();
             double sceneY = event.getSceneY();
             double startX = gameBoardBounds.getMinX();
+            double endX = gameBoardBounds.getMaxX();
             double startY = gameBoardBounds.getMinY();
+            double endY = gameBoardBounds.getMaxY();
             double dx = startX - sceneX;
             double dy = startY - sceneY;
 
-            System.out.println(gameBoard.localToScene(gameScene.getBoundsInLocal()));
+//            System.out.println(gameBoard.localToScene(gameScene.getBoundsInLocal()));
 
-            System.out.println(dx + "\t" + dy);
+            System.out.println(startX + "\t" + startY);
+            System.out.println(sceneX + "\t" + sceneY);
+            System.out.println(endX + "\t" + endY + "\n");
         });
     }
 

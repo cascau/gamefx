@@ -11,6 +11,7 @@ public class UtilityScripts {
         GameObject player = new GameObject();
         player.setTranslateX(BOARD_SIZE_X/2 + GRID_SQUARE_LENGTH/2);
         player.setTranslateY(BOARD_SIZE_Y/2 + GRID_SQUARE_LENGTH/2);
+        player.setTranslateZ(player.getTranslateZ()/2 - 1);
 
         return player;
     }
