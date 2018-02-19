@@ -5,6 +5,7 @@ import com.gamefx.engine.EngineDelegate;
 import com.gamefx.engine.components.GameObject;
 import com.gamefx.engine.utilscripts.UtilityScripts;
 import javafx.application.Application;
+import javafx.geometry.Bounds;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
@@ -136,12 +137,17 @@ public class GameFxWindow extends Application {
 
         gameBoard.setOnMouseClicked(event -> {
 
-            double x = event.getSceneX();
-            double y = event.getSceneY();
+            Bounds gameBoardBounds = gameBoard.localToScene(gameScene.getBoundsInLocal());
+            double sceneX = event.getSceneX();
+            double sceneY = event.getSceneY();
+            double startX = gameBoardBounds.getMinX();
+            double startY = gameBoardBounds.getMinY();
+            double dx = startX - sceneX;
+            double dy = startY - sceneY;
 
-            System.out.println(gameBoard.getBoundsInParent());
+            System.out.println(gameBoard.localToScene(gameScene.getBoundsInLocal()));
 
-            System.out.println(x + "\t" + y);
+            System.out.println(dx + "\t" + dy);
         });
     }
 
