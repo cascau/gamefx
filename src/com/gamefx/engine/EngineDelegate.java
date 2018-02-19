@@ -21,7 +21,7 @@ import static com.gamefx.engine.Constants.*;
  */
 public class EngineDelegate {
 
-    public Rectangle buildMinimap () {
+    public Rectangle buildMinimap() {
 
         Rectangle minimap = new Rectangle();
         minimap.setX(0);

@@ -80,7 +80,9 @@ public class CameraDelegate {
     public void rotateGameBoardOnAxisX(double mouseDeltaX, double mouseDeltaY) {
 //        System.out.println("mouseDeltaX " + mouseDeltaX + "  mouseDeltaY " + mouseDeltaY);
 //                cameraXForm.ry.setAngle(cameraXForm.ry.getAngle() - mouseDeltaX * MOUSE_SPEED * MODIFIER * ROTATION_SPEED * 0.2);
-        cameraXForm.rx.setAngle(cameraXForm.rx.getAngle() + (mouseDeltaX + mouseDeltaY) * MOUSE_SPEED * MODIFIER * ROTATION_SPEED * 0.2);
+        cameraXForm.rx.setPivotX(BOARD_SIZE_X / 2);
+        cameraXForm.rx.setAngle(cameraXForm.rx.getAngle() + (mouseDeltaY) * MOUSE_SPEED * MODIFIER * ROTATION_SPEED * 0.2);
+        System.out.println(cameraXForm.rx.getAngle());
     }
 
     public void zoomCamera(double deltaY) {
