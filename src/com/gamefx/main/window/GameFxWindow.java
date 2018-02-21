@@ -3,22 +3,20 @@ package com.gamefx.main.window;
 import com.gamefx.camera.CameraDelegate;
 import com.gamefx.engine.EngineDelegate;
 import com.gamefx.engine.components.GameObject;
-import com.gamefx.engine.utilscripts.UtilityScripts;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
+import com.gamefx.engine.util.UtilityScripts;
+import com.gamefx.scene.DrawSceneDelegate;
+import com.gamefx.scene.SceneCalculator;
 import javafx.application.Application;
-import javafx.geometry.Bounds;
+import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
-import javafx.util.Duration;
 
 import static com.gamefx.engine.Constants.*;
 
@@ -28,7 +26,9 @@ public class GameFxWindow extends Application {
         launch(args);
     }
 
+    SceneCalculator sceneCalculator;
     EngineDelegate engineDelegate;
+    DrawSceneDelegate drawSceneDelegate;
     CameraDelegate cameraDelegate;
 
     GameObject player;
@@ -44,6 +44,9 @@ public class GameFxWindow extends Application {
     Rectangle gameBoard;
     Rectangle minimap;
 
+    // to avoid triggering mouseClick() event after mouseDrag()
+    private boolean cameraDragDetected = false;
+
     @Override
     public void start(Stage stage) {
 
@@ -58,8 +61,6 @@ public class GameFxWindow extends Application {
             mousePosY = event.getSceneY();
         });
 
-        engineDelegate.drawLinesOnGameBoard(subRootGroup);
-
         stage.setTitle("3D Prototype");
         stage.setMaximized(true);
         stage.setScene(mainScene);
@@ -68,7 +69,7 @@ public class GameFxWindow extends Application {
 
     private void initComponents() {
 
-        engineDelegate = new EngineDelegate();
+        initDelegates();
 
         buildMainScene();
         buildGameScene();
@@ -81,10 +82,16 @@ public class GameFxWindow extends Application {
         // initialize a dummy player
         player = UtilityScripts.buildAndPlaceDefaultPlayer();
 
-        subRootGroup.getChildren().addAll(player, gameBoard, engineDelegate.buildAxes());
+        subRootGroup.getChildren().addAll(player, gameBoard, drawSceneDelegate.buildAxes());
         rootGroup.getChildren().add(gameScene);
         rootGroup.getChildren().add(minimap);
         rootGroup.getChildren().add(cameraDelegate.cameraXForm);
+    }
+
+    private void initDelegates() {
+        drawSceneDelegate = new DrawSceneDelegate();
+        engineDelegate = new EngineDelegate();
+        sceneCalculator = new SceneCalculator();
     }
 
     private void buildMainScene() {
@@ -96,9 +103,11 @@ public class GameFxWindow extends Application {
         subRootGroup = new Group();
         subRootGroup.setTranslateX(350);
         subRootGroup.setTranslateY(50);
+        drawSceneDelegate.drawFullLinesOnGameBoard(subRootGroup);
+//        drawSceneDelegate.drawSmallLinesOnGameBoard(subRootGroup);
 
         gameScene = new SubScene(subRootGroup, 1600, 1000, true, SceneAntialiasing.BALANCED);
-
+        gameScene.setFill(Color.AQUA);
         // scroll event
         gameScene.setOnScroll((ScrollEvent event) -> {
             mousePosX = event.getSceneX();
@@ -111,6 +120,10 @@ public class GameFxWindow extends Application {
 
         // mouse dragged event
         gameScene.setOnMouseDragged(event -> {
+
+            // camera is dragged
+            cameraDragDetected = true;
+
             mouseOldX = mousePosX;
             mouseOldY = mousePosY;
             mousePosX = event.getSceneX();
@@ -126,10 +139,31 @@ public class GameFxWindow extends Application {
                 if (event.isControlDown()) {
                     // rotate the game board with pivot in center on CTRL + RIGHT CLICK
                     cameraDelegate.rotateGameBoardPivotInCenter(mouseDeltaX, mouseDeltaY);
-                } else {
-                    // rotate the game board on its X axis
-                    cameraDelegate.rotateGameBoardOnAxisX(mouseDeltaX, mouseDeltaY);
                 }
+            }
+        });
+
+        mainScene.setOnKeyPressed(event -> {
+
+            Point2D destination = null;
+            double destX = sceneCalculator.getGameSquareFromMouseEventX(player.getTranslateX());
+            double destY = sceneCalculator.getGameSquareFromMouseEventY(player.getTranslateY());
+            switch (event.getCode()) {
+                case W:
+                    destination = new Point2D(destX, destY - GRID_SQUARE_LENGTH);
+                    break;
+                case S:
+                    destination = new Point2D(destX, destY + GRID_SQUARE_LENGTH);
+                    break;
+                case A:
+                    destination = new Point2D(destX - GRID_SQUARE_LENGTH, destY);
+                    break;
+                case D:
+                    destination = new Point2D(destX + GRID_SQUARE_LENGTH, destY);
+                    break;
+            }
+            if (destination != null) {
+                engineDelegate.moveGameObjetToPoint(player, destination);
             }
         });
     }
@@ -137,62 +171,23 @@ public class GameFxWindow extends Application {
     private void buildGameBoard() {
         // initialize the game board
         gameBoard = new Rectangle(BOARD_SIZE_X, BOARD_SIZE_Y);
-        gameBoard.setFill(Color.DARKGRAY);
+        gameBoard.setFill(Color.TRANSPARENT);
+//        gameBoard.setFill(Color.MEDIUMAQUAMARINE);
 
         gameBoard.setOnMouseClicked(event -> {
             // move the player to right click position
-//            if (event.isSecondaryButtonDown()) {
-                int posX = (int) (event.getX() / GRID_SQUARE_LENGTH);
-                int posY = (int) (event.getY() / GRID_SQUARE_LENGTH);
-
-//                player.setTranslateX(event.getX());
-//                player.setTranslateY(event.getY());
-
-                Timeline timeline = new Timeline(60);
-                // timeline that scales and moves the node
-                timeline.getKeyFrames().clear();
-                timeline.getKeyFrames().addAll(
-                        new KeyFrame(Duration.millis(200), new KeyValue(player.translateXProperty(), event.getX())),
-                        new KeyFrame(Duration.millis(200), new KeyValue(player.translateYProperty(), event.getX())),
-                        new KeyFrame(Duration.millis(200), new KeyValue(player.scaleXProperty(), player.getScaleX())),
-                        new KeyFrame(Duration.millis(200), new KeyValue(player.scaleYProperty(), player.getScaleY()))
-                );
-                timeline.play();
-
-                System.out.println(posX + "\t" + posY);
-//            }
+            if (MouseButton.SECONDARY.equals(event.getButton()) && !cameraDragDetected && event.getClickCount() == 1) {
+                Point2D destination = sceneCalculator.getCenterOfGameSquareFromMouseEvent(event);
+                engineDelegate.moveGameObjetToPoint(player, destination);
+            }
+            // camera is not dragged anymore
+            cameraDragDetected = false;
         });
-//
-//        gameBoard.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-//
-//            // move the player to right click position
-//            if (event.isSecondaryButtonDown()) {
-//                int posX = (int) (event.getX() / GRID_SQUARE_LENGTH);
-//                int posY = (int) (event.getY() / GRID_SQUARE_LENGTH);
-//
-////                player.setTranslateX(event.getX());
-////                player.setTranslateY(event.getY());
-//
-//                Timeline timeline = new Timeline(60);
-//                // timeline that scales and moves the node
-//                timeline.getKeyFrames().clear();
-//                timeline.getKeyFrames().addAll(
-//                        new KeyFrame(Duration.millis(200), new KeyValue(player.translateXProperty(), event.getX())),
-//                        new KeyFrame(Duration.millis(200), new KeyValue(player.translateYProperty(), event.getX())),
-//                        new KeyFrame(Duration.millis(200), new KeyValue(player.scaleXProperty(), player.getScaleX())),
-//                        new KeyFrame(Duration.millis(200), new KeyValue(player.scaleYProperty(), player.getScaleX()))
-//                );
-//                timeline.play();
-//
-//                System.out.println(posX + "\t" + posY);
-//            }
-//        });
-
     }
 
     private void buildMinimap() {
         // initialize the mini map
-        minimap = engineDelegate.buildMinimap();
+        minimap = drawSceneDelegate.buildMinimap();
 
         minimap.setOnScroll((ScrollEvent event) -> {
             cameraDelegate.zoomCamera(event.getDeltaY());
@@ -211,7 +206,7 @@ public class GameFxWindow extends Application {
                 cameraDelegate.moveGameBoard(mouseDeltaX, mouseDeltaY);
 
             } else if (event.isSecondaryButtonDown()) {
-                cameraDelegate.rotateGameBoardOnAxisX(mouseDeltaX, mouseDeltaY);
+                cameraDelegate.rotateGameBoardPivotInCenter(mouseDeltaX, mouseDeltaY);
             }
         });
     }

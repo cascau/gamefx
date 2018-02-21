@@ -82,7 +82,7 @@ public class CameraDelegate {
 //                cameraXForm.ry.setAngle(cameraXForm.ry.getAngle() - mouseDeltaX * MOUSE_SPEED * MODIFIER * ROTATION_SPEED * 0.2);
         cameraXForm.rx.setPivotX(BOARD_SIZE_X / 2);
         cameraXForm.rx.setAngle(cameraXForm.rx.getAngle() + (mouseDeltaY) * MOUSE_SPEED * MODIFIER * ROTATION_SPEED * 0.2);
-        System.out.println(cameraXForm.rx.getAngle());
+//        System.out.println(cameraXForm.rx.getAngle());
     }
 
     public void zoomCamera(double deltaY) {
@@ -92,7 +92,7 @@ public class CameraDelegate {
             zoomFactor = 2.0 - zoomFactor;
         }
         camera.setTranslateZ(camera.getTranslateZ() * zoomFactor + deltaY);
-        System.out.println("Cam trans Z: " + camera.getTranslateZ());
+//        System.out.println("Cam trans Z: " + camera.getTranslateZ());
     }
 
     public void rotateGameBoardPivotInCenter(double mouseDeltaX, double mouseDeltaY) {
@@ -102,8 +102,12 @@ public class CameraDelegate {
         cameraXForm.ry.setPivotX(BOARD_SIZE_X / 2);
         cameraXForm.ry.setPivotY(BOARD_SIZE_Y / 2);
 
-        cameraXForm.ry.setAngle(((cameraXForm.ry.getAngle() + mouseDeltaX * 2.0) % 360 + 540) % 360 - 180); // +
-        cameraXForm.rx.setAngle(((cameraXForm.rx.getAngle() - mouseDeltaY * 2.0) % 360 + 540) % 360 - 180); // -
+        double newRxAngle = ((cameraXForm.rx.getAngle() - mouseDeltaY * 2.0) % 360 + 540) % 360 - 180;
+//        cameraXForm.ry.setAngle(((cameraXForm.ry.getAngle() + mouseDeltaX * 2.0) % 360 + 540) % 360 - 180); // +
+        if ((newRxAngle > 5) && (newRxAngle < 90 - CAMERA_INITIAL_X_ANGLE - 5)) {
+            cameraXForm.rx.setAngle(newRxAngle); // -
+            System.out.println(cameraXForm.rx.getAngle());
+        }
     }
 
     public void zoomNodeAnimated(Node node, double x, double y, double zoomFactor) {

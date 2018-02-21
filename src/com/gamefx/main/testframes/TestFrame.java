@@ -122,7 +122,7 @@ public class TestFrame {}
 //
 //    protected void initWorld() {
 //
-////        EngineDelegate.buildAxes(axisGroup);
+////        DrawSceneDelegate.buildAxes(axisGroup);
 //        buildCamera();
 //
 //        gameScene.setCamera(camera);

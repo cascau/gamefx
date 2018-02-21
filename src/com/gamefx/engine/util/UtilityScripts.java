@@ -1,4 +1,4 @@
-package com.gamefx.engine.utilscripts;
+package com.gamefx.engine.util;
 
 import com.gamefx.engine.components.GameObject;
 
