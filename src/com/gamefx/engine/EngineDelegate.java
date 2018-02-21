@@ -64,7 +64,6 @@ public class EngineDelegate {
         return axisGroup;
     }
 
-
     public void drawLinesOnGameBoard(Group subRootGroup) {
 
         //draw vertical lines
@@ -76,7 +75,7 @@ public class EngineDelegate {
             subRootGroup.getChildren().add(line);
 
         }
-        for (int i = 0; i < GRID_SQUARES_X; i++) {
+        for (int i = 0; i < GRID_SQUARES_Y; i++) {
             // draw a horizontal line from
             // [0; i*squareLength] to
             // [boardSizeY; i*squareLength]
