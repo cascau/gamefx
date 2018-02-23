@@ -2,7 +2,7 @@ package com.gamefx.main.window;
 
 import com.gamefx.camera.CameraDelegate;
 import com.gamefx.engine.EngineDelegate;
-import com.gamefx.engine.components.GameObject;
+import com.gamefx.engine.components.GenericGameObject;
 import com.gamefx.engine.util.UtilityScripts;
 import com.gamefx.scene.DrawSceneDelegate;
 import com.gamefx.scene.SceneCalculator;
@@ -31,7 +31,7 @@ public class GameFxWindow extends Application {
     DrawSceneDelegate drawSceneDelegate;
     CameraDelegate cameraDelegate;
 
-    GameObject player;
+    GenericGameObject player;
 
     public double mouseOldX, mouseOldY = 0, mousePosX = 0, mousePosY = 0, mouseDeltaX = 0, mouseDeltaY = 0;
 
@@ -176,7 +176,15 @@ public class GameFxWindow extends Application {
 
         gameBoard.setOnMouseClicked(event -> {
             // move the player to right click position
-            if (MouseButton.SECONDARY.equals(event.getButton()) && !cameraDragDetected && event.getClickCount() == 1) {
+
+            if (MouseButton.PRIMARY.equals(event.getButton()) && !cameraDragDetected) {
+                if (!player.isSelected()) {
+                    player.select();
+                } else {
+                    player.deselect();
+                }
+            }
+            if (MouseButton.SECONDARY.equals(event.getButton()) && !cameraDragDetected) {
                 Point2D destination = sceneCalculator.getCenterOfGameSquareFromMouseEvent(event);
                 engineDelegate.moveGameObjetToPoint(player, destination);
             }

@@ -71,6 +71,7 @@ public class DrawSceneDelegate {
             // [i*squareLength; 0] to
             // [i*squareLength; boardSizeX]
             Line line = new Line(i * GRID_SQUARE_LENGTH, 0, i * GRID_SQUARE_LENGTH, BOARD_SIZE_X);
+            line.setFill(Color.TRANSPARENT);
             subRootGroup.getChildren().add(line);
 
         }
@@ -79,6 +80,7 @@ public class DrawSceneDelegate {
             // [0; i*squareLength] to
             // [boardSizeY; i*squareLength]
             Line line = new Line(0, j * GRID_SQUARE_LENGTH, BOARD_SIZE_Y, j * GRID_SQUARE_LENGTH);
+            line.setFill(Color.TRANSPARENT);
             subRootGroup.getChildren().add(line);
 
         }
