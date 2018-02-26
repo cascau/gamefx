@@ -68,4 +68,8 @@ public class GameActor extends GenericGameObject implements Moveable {
     public Circle getMovementCircle() {
         return movementCircle;
     }
+
+    public Box getEntity() {
+        return entity;
+    }
 }

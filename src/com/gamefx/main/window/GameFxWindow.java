@@ -2,21 +2,22 @@ package com.gamefx.main.window;
 
 import com.gamefx.camera.CameraDelegate;
 import com.gamefx.engine.EngineDelegate;
-import com.gamefx.engine.components.GenericGameObject;
+import com.gamefx.engine.components.GameActor;
 import com.gamefx.engine.util.UtilityScripts;
 import com.gamefx.scene.DrawSceneDelegate;
 import com.gamefx.scene.SceneCalculator;
 import javafx.application.Application;
 import javafx.geometry.Point2D;
-import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.scene.SceneAntialiasing;
-import javafx.scene.SubScene;
+import javafx.scene.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import static com.gamefx.engine.Constants.*;
 
@@ -26,12 +27,15 @@ public class GameFxWindow extends Application {
         launch(args);
     }
 
+    List<GameActor> allGameObjects = new ArrayList<>();
+    List<GameActor> selectedGameObjects = new ArrayList<>();
+
     SceneCalculator sceneCalculator;
     EngineDelegate engineDelegate;
     DrawSceneDelegate drawSceneDelegate;
     CameraDelegate cameraDelegate;
 
-    GenericGameObject player;
+    GameActor player1, player2;
 
     public double mouseOldX, mouseOldY = 0, mousePosX = 0, mousePosY = 0, mouseDeltaX = 0, mouseDeltaY = 0;
 
@@ -79,10 +83,13 @@ public class GameFxWindow extends Application {
         buildGameBoard();
         buildMinimap();
 
-        // initialize a dummy player
-        player = UtilityScripts.buildAndPlaceDefaultPlayer();
+        // initialize a dummy player1
+        player1 = UtilityScripts.buildAndPlaceDefaultPlayer1();
+        player2 = UtilityScripts.buildAndPlaceDefaultPlayer2();
+        allGameObjects.add(player1);
+        allGameObjects.add(player2);
 
-        subRootGroup.getChildren().addAll(player, gameBoard, drawSceneDelegate.buildAxes());
+        subRootGroup.getChildren().addAll(player1, player2, gameBoard, drawSceneDelegate.buildAxes());
         rootGroup.getChildren().add(gameScene);
         rootGroup.getChildren().add(minimap);
         rootGroup.getChildren().add(cameraDelegate.cameraXForm);
@@ -146,8 +153,8 @@ public class GameFxWindow extends Application {
         mainScene.setOnKeyPressed(event -> {
 
             Point2D destination = null;
-            double destX = sceneCalculator.getGameSquareFromMouseEventX(player.getTranslateX());
-            double destY = sceneCalculator.getGameSquareFromMouseEventY(player.getTranslateY());
+            double destX = sceneCalculator.getGameSquareFromMouseEventX(player1.getTranslateX());
+            double destY = sceneCalculator.getGameSquareFromMouseEventY(player1.getTranslateY());
             switch (event.getCode()) {
                 case W:
                     destination = new Point2D(destX, destY - GRID_SQUARE_LENGTH);
@@ -163,7 +170,7 @@ public class GameFxWindow extends Application {
                     break;
             }
             if (destination != null) {
-                engineDelegate.moveGameObjetToPoint(player, destination);
+                engineDelegate.moveGameObjetToPoint(player1, destination);
             }
         });
     }
@@ -174,19 +181,31 @@ public class GameFxWindow extends Application {
         gameBoard.setFill(Color.TRANSPARENT);
 //        gameBoard.setFill(Color.MEDIUMAQUAMARINE);
 
-        gameBoard.setOnMouseClicked(event -> {
-            // move the player to right click position
+        subRootGroup.setOnMouseClicked(event -> {
 
+            Node selectedNode = event.getPickResult().getIntersectedNode();
+            GameActor actor = this.getGameObjectFromListOfObjects(selectedNode);
+
+            // select or deselect the game object
             if (MouseButton.PRIMARY.equals(event.getButton()) && !cameraDragDetected) {
-                if (!player.isSelected()) {
-                    player.select();
-                } else {
-                    player.deselect();
+                if (actor != null) {
+//                    deselectAllGameObjects();
+                    if (!actor.isSelected()) {
+                        actor.select();
+                        selectedGameObjects.add(actor);
+                    } else {
+                        deselectAllGameObjects();
+                    }
                 }
             }
+            // move the player1 to right click position
             if (MouseButton.SECONDARY.equals(event.getButton()) && !cameraDragDetected) {
                 Point2D destination = sceneCalculator.getCenterOfGameSquareFromMouseEvent(event);
-                engineDelegate.moveGameObjetToPoint(player, destination);
+
+//                engineDelegate.moveGameObjetToPoint(actor, destination);
+                for (GameActor object : selectedGameObjects) {
+                    engineDelegate.moveGameObjetToPoint(object, destination);
+                }
             }
             // camera is not dragged anymore
             cameraDragDetected = false;
@@ -224,5 +243,24 @@ public class GameFxWindow extends Application {
         cameraDelegate = new CameraDelegate(gameScene);
         cameraDelegate.initCamera();
         gameScene.setCamera(cameraDelegate.camera);
+    }
+
+    private GameActor getGameObjectFromListOfObjects(Node node) {
+
+        for (GameActor gameObject : allGameObjects) {
+
+            if (gameObject.getEntity().equals(node)) {
+                return gameObject;
+            }
+        }
+        return null;
+    }
+
+    private void deselectAllGameObjects() {
+        for (Iterator<GameActor> it = selectedGameObjects.iterator(); it.hasNext(); ) {
+            GameActor actor = it.next();
+            actor.deselect();
+            selectedGameObjects.remove(actor);
+        }
     }
 }
