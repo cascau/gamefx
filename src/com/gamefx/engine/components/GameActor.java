@@ -17,6 +17,8 @@ public class GameActor extends GenericGameObject implements Moveable {
     private double viewDistance = 20 * GRID_SQUARE_LENGTH;
     private double movementDistance = 5 * GRID_SQUARE_LENGTH;
 
+    private boolean selected = false;
+
     public GameActor() {
 
         entity = new Box(GRID_SQUARE_LENGTH, GRID_SQUARE_LENGTH, GRID_SQUARE_LENGTH * 2);
@@ -41,7 +43,7 @@ public class GameActor extends GenericGameObject implements Moveable {
 
     @Override
     public void select() {
-        movementCircle = new Circle(entity.getTranslateX(), entity.getTranslateY(), movementDistance);
+        movementCircle = new Circle(entity.getTranslateX(), entity.getTranslateY(), movementDistance + GRID_SQUARE_LENGTH / 2);
         // color it yellow
         movementCircle.setStroke(Color.DARKVIOLET);
         movementCircle.setFill(Color.TRANSPARENT);
@@ -71,5 +73,9 @@ public class GameActor extends GenericGameObject implements Moveable {
 
     public Box getEntity() {
         return entity;
+    }
+
+    public boolean isSelected() {
+        return selected;
     }
 }

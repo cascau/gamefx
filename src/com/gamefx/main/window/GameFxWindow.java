@@ -44,6 +44,7 @@ public class GameFxWindow extends Application {
 
     Group rootGroup;
     Group subRootGroup;
+    Group minimapGroup;
 
     Rectangle gameBoard;
     Rectangle minimap;
@@ -66,7 +67,8 @@ public class GameFxWindow extends Application {
         });
 
         stage.setTitle("3D Prototype");
-        stage.setMaximized(true);
+//        stage.setMaximized(true);
+        stage.setResizable(Boolean.FALSE);
         stage.setScene(mainScene);
         stage.show();
     }
@@ -75,13 +77,13 @@ public class GameFxWindow extends Application {
 
         initDelegates();
 
+        buildMinimap();
         buildMainScene();
         buildGameScene();
 
         buildCamera();
 
         buildGameBoard();
-        buildMinimap();
 
         // initialize a dummy player1
         player1 = UtilityScripts.buildAndPlaceDefaultPlayer1();
@@ -91,7 +93,7 @@ public class GameFxWindow extends Application {
 
         subRootGroup.getChildren().addAll(player1, player2, gameBoard, drawSceneDelegate.buildAxes());
         rootGroup.getChildren().add(gameScene);
-        rootGroup.getChildren().add(minimap);
+        rootGroup.getChildren().add(minimapGroup);
         rootGroup.getChildren().add(cameraDelegate.cameraXForm);
     }
 
@@ -103,17 +105,18 @@ public class GameFxWindow extends Application {
 
     private void buildMainScene() {
         rootGroup = new Group();
-        mainScene = new Scene(rootGroup, 1600, 1000, false, SceneAntialiasing.BALANCED);
+        mainScene = new Scene(rootGroup, 1602, 1000, false, SceneAntialiasing.BALANCED);
+        mainScene.setFill(Color.DARKGREEN);
     }
 
     private void buildGameScene() {
         subRootGroup = new Group();
-        subRootGroup.setTranslateX(350);
+        subRootGroup.setTranslateX(250);
         subRootGroup.setTranslateY(50);
         drawSceneDelegate.drawFullLinesOnGameBoard(subRootGroup);
 //        drawSceneDelegate.drawSmallLinesOnGameBoard(subRootGroup);
 
-        gameScene = new SubScene(subRootGroup, 1600, 1000, true, SceneAntialiasing.BALANCED);
+        gameScene = new SubScene(subRootGroup, 1200, 800, true, SceneAntialiasing.BALANCED);
         gameScene.setFill(Color.AQUA);
         // scroll event
         gameScene.setOnScroll((ScrollEvent event) -> {
@@ -193,9 +196,9 @@ public class GameFxWindow extends Application {
                     if (!actor.isSelected()) {
                         actor.select();
                         selectedGameObjects.add(actor);
-                    } else {
-                        deselectAllGameObjects();
                     }
+                } else {
+                    deselectAllGameObjects();
                 }
             }
             // move the player1 to right click position
@@ -213,8 +216,12 @@ public class GameFxWindow extends Application {
     }
 
     private void buildMinimap() {
+
+        minimapGroup = new Group();
         // initialize the mini map
         minimap = drawSceneDelegate.buildMinimap();
+        minimapGroup.getChildren().add(minimap);
+        drawSceneDelegate.drawLinesOnMinimap(minimap, minimapGroup);
 
         minimap.setOnScroll((ScrollEvent event) -> {
             cameraDelegate.zoomCamera(event.getDeltaY());
@@ -256,11 +263,14 @@ public class GameFxWindow extends Application {
         return null;
     }
 
-    private void deselectAllGameObjects() {
+    private synchronized void deselectAllGameObjects() {
+
+        List<GameActor> objectsToDeselect = new ArrayList<>();
         for (Iterator<GameActor> it = selectedGameObjects.iterator(); it.hasNext(); ) {
             GameActor actor = it.next();
             actor.deselect();
-            selectedGameObjects.remove(actor);
+            objectsToDeselect.add(actor);
         }
+        selectedGameObjects.removeAll(objectsToDeselect);
     }
 }

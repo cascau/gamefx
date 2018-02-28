@@ -6,9 +6,10 @@
 package com.gamefx.scene;
 
 import com.gamefx.camera.CameraTransform;
+import com.gamefx.engine.Constants;
+import com.gamefx.scene.components.Materials;
 import javafx.scene.Group;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
@@ -23,39 +24,50 @@ public class DrawSceneDelegate {
     public Rectangle buildMinimap() {
 
         Rectangle minimap = new Rectangle();
-        minimap.setX(0);
+        minimap.setX(1200);
         minimap.setY(0);
-        minimap.setWidth(300);
-        minimap.setHeight(300);
-        minimap.setFill(Color.YELLOW);
+        minimap.setWidth(400);
+        minimap.setHeight(400);
+        minimap.setFill(Color.LIGHTGOLDENRODYELLOW);
         minimap.setStroke(Color.BLACK);
 
         return minimap;
+    }
+
+    public void drawLinesOnMinimap(Rectangle minimap, Group group) {
+
+        double startX = minimap.getX();
+        double endX = startX + minimap.getWidth();
+        double startY = minimap.getY();
+        double endY = startY + minimap.getHeight();
+        double stepX = minimap.getWidth() / Constants.GRID_SQUARES_X;
+        double stepY = minimap.getHeight() / Constants.GRID_SQUARES_Y;
+
+        for (double i = startX; i<endX; i+=stepX) {
+            //draw vertical lines
+            Line line = new Line(i, startY, i, endY);
+            line.setFill(Color.TRANSPARENT);
+            group.getChildren().add(line);
+        }
+        for (double j = startY; j<endY; j+=stepY) {
+            //draw horizontal lines
+            Line line = new Line(startX, j, endX, j);
+            line.setFill(Color.TRANSPARENT);
+            group.getChildren().add(line);
+        }
     }
 
     public CameraTransform buildAxes() {
         System.out.println("buildAxes()");
         final CameraTransform axisGroup = new CameraTransform();
 
-        final PhongMaterial redMaterial = new PhongMaterial();
-        redMaterial.setDiffuseColor(Color.DARKRED);
-        redMaterial.setSpecularColor(Color.RED);
-
-        final PhongMaterial greenMaterial = new PhongMaterial();
-        greenMaterial.setDiffuseColor(Color.DARKGREEN);
-        greenMaterial.setSpecularColor(Color.GREEN);
-
-        final PhongMaterial blueMaterial = new PhongMaterial();
-        blueMaterial.setDiffuseColor(Color.DARKBLUE);
-        blueMaterial.setSpecularColor(Color.BLUE);
-
         final Box xAxis = new Box(AXIS_LENGTH, 1, 1);
         final Box yAxis = new Box(1, AXIS_LENGTH, 1);
         final Box zAxis = new Box(1, 1, AXIS_LENGTH);
 
-        xAxis.setMaterial(redMaterial);
-        yAxis.setMaterial(greenMaterial);
-        zAxis.setMaterial(blueMaterial);
+        xAxis.setMaterial(Materials.redMaterial());
+        yAxis.setMaterial(Materials.greenMaterial());
+        zAxis.setMaterial(Materials.blueMaterial());
 
         axisGroup.getChildren().addAll(xAxis, yAxis, zAxis);
         axisGroup.setVisible(true);
