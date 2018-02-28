@@ -91,6 +91,7 @@ public class GameFxWindow extends Application {
         allGameObjects.add(player1);
         allGameObjects.add(player2);
 
+        subRootGroup.getChildren().addAll(UtilityScripts.buildGameWorld());
         subRootGroup.getChildren().addAll(player1, player2, gameBoard, drawSceneDelegate.buildAxes());
         rootGroup.getChildren().add(gameScene);
         rootGroup.getChildren().add(minimapGroup);

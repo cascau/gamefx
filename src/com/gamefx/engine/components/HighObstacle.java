@@ -11,7 +11,7 @@ public class HighObstacle extends Obstacle {
 
     public HighObstacle() {
 
-        entity = new Box(GRID_SQUARE_LENGTH, GRID_SQUARE_LENGTH, GRID_SQUARE_LENGTH * 0.75);
+        entity = new Box(GRID_SQUARE_LENGTH, GRID_SQUARE_LENGTH, GRID_SQUARE_LENGTH * 3);
 
         // move to the first square
         setTranslateX(GRID_SQUARE_LENGTH / 2);
@@ -19,7 +19,7 @@ public class HighObstacle extends Obstacle {
         setTranslateZ(-GRID_SQUARE_LENGTH * 2);
 
         // color it red
-        entity.setMaterial(Materials.redMaterial());
+        entity.setMaterial(Materials.greenMaterial());
     }
 
     public Box getEntity() {
