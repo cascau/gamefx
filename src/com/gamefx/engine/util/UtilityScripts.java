@@ -46,26 +46,20 @@ public class UtilityScripts {
         for (int i=0; i<config.length; i++) {
             for (int j=0; j<config[i].length; j++) {
 
-                Obstacle obstacle = null;
-
                 switch (config[i][j]) {
                     case 1: {
-                        obstacle = new NoCoverObstacle(i,j);
+                        result.add(new NoCoverObstacle(i,j));
                         break;
                     }
                     case 2: {
-                        obstacle = new LowCoverObstacle(i, j);
+                        result.add(new LowCoverObstacle(i, j));
                         break;
                     }
                     case 3: {
-                        obstacle = new HighCoverObstacle(i, j);
+                        result.add(new HighCoverObstacle(i, j));
                         break;
                     }
-                    default: {
-                        obstacle = new Obstacle();
-                    }
                 }
-                result.add(obstacle);
 
                 System.out.print(config[i][j] + " ");
             }
