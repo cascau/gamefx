@@ -3,6 +3,7 @@ package com.gamefx.main.window;
 import com.gamefx.camera.CameraDelegate;
 import com.gamefx.engine.EngineDelegate;
 import com.gamefx.engine.components.GameActor;
+import com.gamefx.engine.components.MatrixScene;
 import com.gamefx.engine.util.UtilityScripts;
 import com.gamefx.scene.DrawSceneDelegate;
 import com.gamefx.scene.SceneCalculator;
@@ -30,8 +31,6 @@ public class GameFxWindow extends Application {
     List<GameActor> allGameObjects = new ArrayList<>();
     List<GameActor> selectedGameObjects = new ArrayList<>();
 
-    SceneCalculator sceneCalculator;
-    EngineDelegate engineDelegate;
     DrawSceneDelegate drawSceneDelegate;
     CameraDelegate cameraDelegate;
 
@@ -86,13 +85,14 @@ public class GameFxWindow extends Application {
         buildGameBoard();
 
         // initialize a dummy player1
-        player1 = UtilityScripts.buildAndPlaceDefaultPlayer1();
-        player2 = UtilityScripts.buildAndPlaceDefaultPlayer2();
+        player1 = new GameActor(15, 28);
+        player2 = new GameActor(8, 20);
         allGameObjects.add(player1);
         allGameObjects.add(player2);
 
         subRootGroup.getChildren().addAll(UtilityScripts.buildGameWorld());
         subRootGroup.getChildren().addAll(player1, player2, gameBoard, drawSceneDelegate.buildAxes());
+        subRootGroup.getChildren().addAll(UtilityScripts.createGameWorldFromMatrix(MatrixScene.MAP_BORS_VASILE));
         rootGroup.getChildren().add(gameScene);
         rootGroup.getChildren().add(minimapGroup);
         rootGroup.getChildren().add(cameraDelegate.cameraXForm);
@@ -100,8 +100,6 @@ public class GameFxWindow extends Application {
 
     private void initDelegates() {
         drawSceneDelegate = new DrawSceneDelegate();
-        engineDelegate = new EngineDelegate();
-        sceneCalculator = new SceneCalculator();
     }
 
     private void buildMainScene() {
@@ -157,8 +155,8 @@ public class GameFxWindow extends Application {
         mainScene.setOnKeyPressed(event -> {
 
             Point2D destination = null;
-            double destX = sceneCalculator.getGameSquareFromMouseEventX(player1.getTranslateX());
-            double destY = sceneCalculator.getGameSquareFromMouseEventY(player1.getTranslateY());
+            double destX = SceneCalculator.getGameSquareFromMouseEventX(player1.getTranslateX());
+            double destY = SceneCalculator.getGameSquareFromMouseEventY(player1.getTranslateY());
             switch (event.getCode()) {
                 case W:
                     destination = new Point2D(destX, destY - GRID_SQUARE_LENGTH);
@@ -174,7 +172,7 @@ public class GameFxWindow extends Application {
                     break;
             }
             if (destination != null) {
-                engineDelegate.moveGameObjetToPoint(player1, destination);
+                EngineDelegate.moveGameObjetToPoint(player1, destination);
             }
         });
     }
@@ -204,11 +202,11 @@ public class GameFxWindow extends Application {
             }
             // move the player1 to right click position
             if (MouseButton.SECONDARY.equals(event.getButton()) && !cameraDragDetected) {
-                Point2D destination = sceneCalculator.getCenterOfGameSquareFromMouseEvent(event);
+                Point2D destination = SceneCalculator.getCenterOfGameSquareFromMouseEvent(event);
 
 //                engineDelegate.moveGameObjetToPoint(actor, destination);
                 for (GameActor object : selectedGameObjects) {
-                    engineDelegate.moveGameObjetToPoint(object, destination);
+                    EngineDelegate.moveGameObjetToPoint(object, destination);
                 }
             }
             // camera is not dragged anymore

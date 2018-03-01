@@ -1,48 +1,77 @@
 package com.gamefx.engine.util;
 
-import com.gamefx.engine.components.GameActor;
-import com.gamefx.engine.components.HighObstacle;
+import com.gamefx.engine.components.HighCoverObstacle;
+import com.gamefx.engine.components.LowCoverObstacle;
+import com.gamefx.engine.components.NoCoverObstacle;
+import com.gamefx.engine.components.Obstacle;
 import javafx.scene.shape.Box;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.gamefx.engine.Constants.*;
-
 public class UtilityScripts {
-
-    public static GameActor buildAndPlaceDefaultPlayer1() {
-
-        GameActor player = new GameActor();
-        player.setTranslateX(BOARD_SIZE_X / 2 + GRID_SQUARE_LENGTH / 2);
-        player.setTranslateY(BOARD_SIZE_Y / 2 + GRID_SQUARE_LENGTH / 2);
-        player.setTranslateZ(player.getTranslateZ() / 2 - 1);
-
-        return player;
-    }
-
-    public static GameActor buildAndPlaceDefaultPlayer2() {
-
-        GameActor player = new GameActor();
-        player.setTranslateX(BOARD_SIZE_X / 4 + GRID_SQUARE_LENGTH / 2);
-        player.setTranslateY(BOARD_SIZE_Y / 2 + GRID_SQUARE_LENGTH / 2);
-        player.setTranslateZ(player.getTranslateZ() / 2 - 1);
-
-        return player;
-    }
 
     public static List<Box> buildGameWorld() {
 
         List<Box> building = new ArrayList<>();
 
-        for (int i = 0; i < 10; i++) {
-            HighObstacle highObstacle = new HighObstacle();
-            highObstacle.getEntity().setTranslateX(GRID_SQUARE_LENGTH * i + GRID_SQUARE_LENGTH / 2);
-            highObstacle.getEntity().setTranslateY(GRID_SQUARE_LENGTH * i + GRID_SQUARE_LENGTH / 2);
-            highObstacle.getEntity().setTranslateZ(highObstacle.getTranslateZ() / 2 - 1);
-            building.add(highObstacle.getEntity());
-        }
+//        for (int i = 0; i < 10; i++) {
+//            HighCoverObstacle highCoverObstacle = new HighCoverObstacle();
+//            Point2D destination = SceneCalculator.getGameSquareCenterFromMatrixPosition(0, i);
+//            highCoverObstacle.getEntity().setTranslateX(destination.getX());
+//            highCoverObstacle.getEntity().setTranslateY(destination.getY());
+//            building.add(highCoverObstacle.getEntity());
+//
+//            destination = SceneCalculator.getGameSquareCenterFromMatrixPosition(1, i);
+//            LowCoverObstacle lowCoverObstacle = new LowCoverObstacle();
+//            lowCoverObstacle.getEntity().setTranslateX(destination.getX());
+//            lowCoverObstacle.getEntity().setTranslateY(destination.getY());
+//            building.add(lowCoverObstacle.getEntity());
+//
+//            destination = SceneCalculator.getGameSquareCenterFromMatrixPosition(2, i);
+//            NoCoverObstacle noCoverObstacle = new NoCoverObstacle();
+//            noCoverObstacle.getEntity().setTranslateX(destination.getX());
+//            noCoverObstacle.getEntity().setTranslateY(destination.getY());
+//            building.add(noCoverObstacle.getEntity());
+//        }
 
         return building;
+    }
+
+    public static List<Obstacle> createGameWorldFromMatrix(int[][] config) {
+
+        List<Obstacle> result = new ArrayList<>();
+
+        System.out.println("loading map configuration configuration:");
+        for (int i=0; i<config.length; i++) {
+            for (int j=0; j<config[i].length; j++) {
+
+                Obstacle obstacle = null;
+
+                switch (config[i][j]) {
+                    case 1: {
+                        obstacle = new NoCoverObstacle(i,j);
+                        break;
+                    }
+                    case 2: {
+                        obstacle = new LowCoverObstacle(i, j);
+                        break;
+                    }
+                    case 3: {
+                        obstacle = new HighCoverObstacle(i, j);
+                        break;
+                    }
+                    default: {
+                        obstacle = new Obstacle();
+                    }
+                }
+                result.add(obstacle);
+
+                System.out.print(config[i][j] + " ");
+            }
+        System.out.println();
+        }
+
+        return result;
     }
 }

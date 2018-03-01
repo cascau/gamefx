@@ -65,9 +65,9 @@ public class DrawSceneDelegate {
         final Box yAxis = new Box(1, AXIS_LENGTH, 1);
         final Box zAxis = new Box(1, 1, AXIS_LENGTH);
 
-        xAxis.setMaterial(Materials.redMaterial());
-        yAxis.setMaterial(Materials.greenMaterial());
-        zAxis.setMaterial(Materials.blueMaterial());
+        xAxis.setMaterial(Materials.createMaterial(Color.RED));
+        yAxis.setMaterial(Materials.createMaterial(Color.GREEN));
+        zAxis.setMaterial(Materials.createMaterial(Color.BLUE));
 
         axisGroup.getChildren().addAll(xAxis, yAxis, zAxis);
         axisGroup.setVisible(true);

@@ -1,16 +1,15 @@
 package com.gamefx.engine.components;
 
+import com.gamefx.scene.components.Materials;
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Circle;
 
+import static com.gamefx.engine.Constants.DEFAULT_CHARACTER_HEIGHT;
 import static com.gamefx.engine.Constants.GRID_SQUARE_LENGTH;
 
-public class GameActor extends GenericGameObject implements Moveable {
-
-    private Box entity;
+public class GameActor extends GenericObject implements Moveable {
 
     private Circle movementCircle = null;
 
@@ -20,21 +19,22 @@ public class GameActor extends GenericGameObject implements Moveable {
     private boolean selected = false;
 
     public GameActor() {
+        this(0, 0);
+    }
 
-        entity = new Box(GRID_SQUARE_LENGTH, GRID_SQUARE_LENGTH, GRID_SQUARE_LENGTH * 2);
+    public GameActor(int startX, int startY) {
+
+        super(startX, startY);
+        entity = new Box(GRID_SQUARE_LENGTH, GRID_SQUARE_LENGTH, DEFAULT_CHARACTER_HEIGHT);
         getChildren().add(entity);
-
-        // move to the first square
-        setTranslateX(GRID_SQUARE_LENGTH / 2);
-        setTranslateY(GRID_SQUARE_LENGTH / 2);
-        setTranslateZ(-GRID_SQUARE_LENGTH * 2);
+        entity.setTranslateZ(-entity.getHeight());
+//        setTranslateZ(-entity.getHeight());
 
         // color it red
-        final PhongMaterial redMaterial = new PhongMaterial();
-        redMaterial.setSpecularColor(Color.DARKRED);
-        redMaterial.setDiffuseColor(Color.RED);
-        entity.setMaterial(redMaterial);
+        entity.setMaterial(Materials.createMaterial(Color.PALEVIOLETRED));
     }
+
+
 
     @Override
     public void moveTo(Point2D destination) {
@@ -47,7 +47,7 @@ public class GameActor extends GenericGameObject implements Moveable {
         // color it yellow
         movementCircle.setStroke(Color.DARKVIOLET);
         movementCircle.setFill(Color.TRANSPARENT);
-        movementCircle.setTranslateZ(+25);
+        movementCircle.setTranslateZ(+5);
         getChildren().add(movementCircle);
         selected = true;
     }

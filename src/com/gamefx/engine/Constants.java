@@ -11,11 +11,17 @@ package com.gamefx.engine;
 public interface Constants {
 
 
-    double GRID_SQUARES_X = 60;
-    double GRID_SQUARES_Y = 60;
+    int GRID_SQUARES_X = 30;
+    int GRID_SQUARES_Y = 30;
+
     double GRID_SQUARE_LENGTH = 20;
     double BOARD_SIZE_X = GRID_SQUARES_X * GRID_SQUARE_LENGTH;
     double BOARD_SIZE_Y = GRID_SQUARES_Y * GRID_SQUARE_LENGTH;
+
+    double DEFAULT_CHARACTER_HEIGHT = 50;
+    double DEFAULT_NO_OBSTACLE_HEIGHT = 0;
+    double DEFAULT_LOW_OBSTACLE_HEIGHT = 30;
+    double DEFAULT_HIGH_OBSTACLE_HEIGHT = 70;
 
     double CAMERA_INITIAL_DISTANCE_X = 200;
     double CAMERA_INITIAL_DISTANCE_Y = 200;

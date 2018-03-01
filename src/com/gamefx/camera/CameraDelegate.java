@@ -75,9 +75,9 @@ public class CameraDelegate {
 
         cameraXForm2.t.setX(cameraXForm2.t.getX() - mouseDeltaX * MOUSE_SPEED * MODIFIER * TRACK_SPEED * 10);
         cameraXForm2.t.setY(cameraXForm2.t.getY() - mouseDeltaY * MOUSE_SPEED * MODIFIER * TRACK_SPEED * 10);
-        System.out.println("1\t " + cameraXForm.t.toString());
-        System.out.println("2\t " + cameraXForm2.t.toString());
-        System.out.println("3\t " + cameraXForm3.t.toString() + "\n");
+//        System.out.println("1\t " + cameraXForm.t.toString());
+//        System.out.println("2\t " + cameraXForm2.t.toString());
+//        System.out.println("3\t " + cameraXForm3.t.toString() + "\n");
     }
 
     public void rotateGameBoardOnAxisX(double mouseDeltaX, double mouseDeltaY) {
