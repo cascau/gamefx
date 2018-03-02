@@ -1,9 +1,12 @@
 package com.gamefx.engine.util;
 
+import com.gamefx.engine.EngineDelegate;
 import com.gamefx.engine.components.HighCoverObstacle;
 import com.gamefx.engine.components.LowCoverObstacle;
 import com.gamefx.engine.components.NoCoverObstacle;
 import com.gamefx.engine.components.Obstacle;
+import com.gamefx.scene.SceneCalculator;
+import javafx.geometry.Point2D;
 import javafx.scene.shape.Box;
 
 import java.util.ArrayList;

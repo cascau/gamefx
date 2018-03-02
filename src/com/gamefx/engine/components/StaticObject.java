@@ -9,8 +9,7 @@ public abstract class StaticObject extends GenericObject {
 
     public StaticObject(int x, int y) {
         super(x, y);
-        Point2D destination = SceneCalculator.getGameSquareCenterFromMatrixPosition(x, y);
-        EngineDelegate.moveGameObjetToPoint(this, destination);
+
     }
 
     @Override
