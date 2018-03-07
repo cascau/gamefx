@@ -1,5 +1,6 @@
 package com.gamefx.camera;
 
+import com.gamefx.engine.EngineDelegate;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -22,7 +23,7 @@ public class CameraDelegate {
     public final CameraTransform cameraXForm2 = new CameraTransform();
     public final CameraTransform cameraXForm3 = new CameraTransform();
 
-    public final PerspectiveCamera camera = new PerspectiveCamera(false);
+    public final PerspectiveCamera camera = new PerspectiveCamera(true);
     public CameraView cameraView;
 
     public CameraDelegate() {
@@ -34,17 +35,16 @@ public class CameraDelegate {
         camera.setNearClip(CAMERA_NEAR_CLIP);
         camera.setFarClip(CAMERA_FAR_CLIP);
 
-        camera.setTranslateX(CAMERA_INITIAL_DISTANCE_X);
-        camera.setTranslateY(CAMERA_INITIAL_DISTANCE_Y);
-        camera.setTranslateZ(CAMERA_INITIAL_DISTANCE_Z);
+//        camera.setTranslateX(CAMERA_INITIAL_DISTANCE_X);
+//        camera.setTranslateY(CAMERA_INITIAL_DISTANCE_Y);
+//        camera.setTranslateZ(CAMERA_INITIAL_DISTANCE_Z);
 
         cameraXForm.rx.setAngle(CAMERA_INITIAL_X_ANGLE);
 //        cameraXForm.ry.setAngle(CAMERA_INITIAL_Y_ANGLE);
-//        cameraXForm.rz.setAngle(CAMERA_INITIAL_Z_ANGLE);
-
+        cameraXForm.rz.setAngle(CAMERA_INITIAL_Z_ANGLE);
 
         //add a Point Light for better viewing of the grid coordinate system
-        PointLight light = new PointLight(Color.BLUE);
+        PointLight light = new PointLight(Color.BLACK);
 
         cameraXForm.getChildren().add(light);
         light.setTranslateX(camera.getTranslateX());
@@ -66,9 +66,6 @@ public class CameraDelegate {
     public void initCamera() {
 
         camera.getTransforms().addAll(rotateX, rotateY, rotateZ);
-        camera.setNearClip(0.1);
-        camera.setFarClip(1000.0);
-        camera.setTranslateZ(0);
     }
 
     public void moveGameBoard(double mouseDeltaX, double mouseDeltaY) {
@@ -108,6 +105,7 @@ public class CameraDelegate {
         double newRxAngle = ((cameraXForm.rx.getAngle() - mouseDeltaY * 2.0) % 360 + 540) % 360 - 180;
 //        cameraXForm.ry.setAngle(((cameraXForm.ry.getAngle() + mouseDeltaX * 2.0) % 360 + 540) % 360 - 180); // +
         if ((newRxAngle > 5) && (newRxAngle < 90 - CAMERA_INITIAL_X_ANGLE - 5)) {
+
             cameraXForm.rx.setAngle(newRxAngle); // -
 //            System.out.println(cameraXForm.rx.toString());
         }

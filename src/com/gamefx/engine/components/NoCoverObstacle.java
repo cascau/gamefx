@@ -18,8 +18,7 @@ public class NoCoverObstacle extends Obstacle {
         super(initialX, initialY);
         entity = new Box(GRID_SQUARE_LENGTH, GRID_SQUARE_LENGTH, DEFAULT_NO_OBSTACLE_HEIGHT);
         getChildren().add(entity);
-//        entity.setTranslateZ(-entity.getHeight() / 2);
-        setTranslateZ(-entity.getHeight());
+        entity.translateZProperty().setValue(-entity.getHeight() / 2);
 
         // color it red
         entity.setMaterial(Materials.createMaterial(Color.BLUE));

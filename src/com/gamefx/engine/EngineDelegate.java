@@ -4,7 +4,9 @@ import com.gamefx.engine.components.GenericObject;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
+import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 public class EngineDelegate {
@@ -27,5 +29,10 @@ public class EngineDelegate {
             );
             timeline.play();
         }
+    }
+
+    public static Bounds getBounds(Rectangle gameBoard) {
+
+        return gameBoard.localToScene(gameBoard.getBoundsInParent());
     }
 }

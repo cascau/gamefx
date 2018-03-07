@@ -24,11 +24,10 @@ public class GameActor extends GenericObject implements Moveable {
 
     public GameActor(int startX, int startY) {
 
-        super(startX, startY);
+//        super(startX, startY);
         entity = new Box(GRID_SQUARE_LENGTH, GRID_SQUARE_LENGTH, DEFAULT_CHARACTER_HEIGHT);
         getChildren().add(entity);
-        entity.setTranslateZ(-entity.getHeight());
-//        setTranslateZ(-entity.getHeight());
+        entity.translateZProperty().setValue(-entity.getHeight() / 2);
 
         // color it red
         entity.setMaterial(Materials.createMaterial(Color.PALEVIOLETRED));

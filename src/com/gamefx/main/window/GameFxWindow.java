@@ -8,10 +8,12 @@ import com.gamefx.engine.util.UtilityScripts;
 import com.gamefx.scene.DrawSceneDelegate;
 import com.gamefx.scene.SceneCalculator;
 import javafx.application.Application;
+import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
@@ -45,6 +47,8 @@ public class GameFxWindow extends Application {
     Group subRootGroup;
     Group minimapGroup;
 
+    VBox infoBox;
+
     Rectangle gameBoard;
     Rectangle minimap;
 
@@ -77,12 +81,13 @@ public class GameFxWindow extends Application {
         initDelegates();
 
         buildMinimap();
+        buildInfoGroup();
         buildMainScene();
         buildGameScene();
 
-        buildCamera();
 
         buildGameBoard();
+        buildCamera();
 
         // initialize a dummy player1
         player1 = new GameActor(15, 28);
@@ -90,12 +95,14 @@ public class GameFxWindow extends Application {
         allGameObjects.add(player1);
         allGameObjects.add(player2);
 
-        subRootGroup.getChildren().addAll(UtilityScripts.buildGameWorld());
         subRootGroup.getChildren().addAll(player1, player2, gameBoard, drawSceneDelegate.buildAxes());
         subRootGroup.getChildren().addAll(UtilityScripts.createGameWorldFromMatrix(MatrixScene.MAP_BORS_VASILE));
         rootGroup.getChildren().add(gameScene);
         rootGroup.getChildren().add(minimapGroup);
+        rootGroup.getChildren().add(infoBox);
         rootGroup.getChildren().add(cameraDelegate.cameraXForm);
+
+        cameraDelegate.zoomNodeAnimated(subRootGroup, -500, -300, -10);
     }
 
     private void initDelegates() {
@@ -110,8 +117,8 @@ public class GameFxWindow extends Application {
 
     private void buildGameScene() {
         subRootGroup = new Group();
-        subRootGroup.setTranslateX(250);
-        subRootGroup.setTranslateY(50);
+        subRootGroup.setTranslateX(-500);
+        subRootGroup.setTranslateY(-300);
         drawSceneDelegate.drawFullLinesOnGameBoard(subRootGroup);
 //        drawSceneDelegate.drawSmallLinesOnGameBoard(subRootGroup);
 
@@ -148,6 +155,12 @@ public class GameFxWindow extends Application {
                 if (event.isControlDown()) {
                     // rotate the game board with pivot in center on CTRL + RIGHT CLICK
                     cameraDelegate.rotateGameBoardPivotInCenter(mouseDeltaX, mouseDeltaY);
+                } else {
+                    Bounds bounds = EngineDelegate.getBounds(gameBoard);
+                    cameraDelegate.cameraXForm.rz.setPivotX((bounds.getMinX() + bounds.getMaxX()) / 2);
+                    cameraDelegate.cameraXForm.rz.setPivotY((bounds.getMinY() + bounds.getMaxY()) / 2);
+
+                    cameraDelegate.cameraXForm.rz.setAngle(cameraDelegate.cameraXForm.rz.getAngle() + mouseDeltaX);
                 }
             }
         });
@@ -239,9 +252,20 @@ public class GameFxWindow extends Application {
                 cameraDelegate.moveGameBoard(mouseDeltaX, mouseDeltaY);
 
             } else if (event.isSecondaryButtonDown()) {
+                Bounds bounds = EngineDelegate.getBounds(gameBoard);
+                cameraDelegate.cameraXForm.rz.setPivotX((bounds.getMinX() + bounds.getMaxX()) / 2);
+                cameraDelegate.cameraXForm.rz.setPivotY((bounds.getMinY() + bounds.getMaxY()) / 2);
+
                 cameraDelegate.rotateGameBoardPivotInCenter(mouseDeltaX, mouseDeltaY);
+
             }
         });
+    }
+
+    private void buildInfoGroup() {
+
+        infoBox = drawSceneDelegate.buildInfoGroup();
+
     }
 
     private void buildCamera() {
@@ -249,6 +273,10 @@ public class GameFxWindow extends Application {
         cameraDelegate = new CameraDelegate(gameScene);
         cameraDelegate.initCamera();
         gameScene.setCamera(cameraDelegate.camera);
+
+        Bounds bounds = EngineDelegate.getBounds(gameBoard);
+        cameraDelegate.cameraXForm.rz.setPivotX((bounds.getMinX() + bounds.getMaxX()) / 2);
+        cameraDelegate.cameraXForm.rz.setPivotY((bounds.getMinY() + bounds.getMaxY()) / 2);
     }
 
     private GameActor getGameObjectFromListOfObjects(Node node) {

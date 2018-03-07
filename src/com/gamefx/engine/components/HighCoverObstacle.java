@@ -17,10 +17,9 @@ public class HighCoverObstacle extends Obstacle {
         super(initialX, initialY);
         entity = new Box(GRID_SQUARE_LENGTH, GRID_SQUARE_LENGTH, DEFAULT_HIGH_OBSTACLE_HEIGHT);
         getChildren().add(entity);
-//        entity.setTranslateZ(-entity.getHeight() / 2);
-        setTranslateZ(-entity.getHeight());
+        entity.translateZProperty().setValue(-entity.getHeight() / 2);
 
         // color it red
-        entity.setMaterial(Materials.createMaterial(Color.BLUE));
+        entity.setMaterial(Materials.createMaterial(Color.BROWN));
     }
 }

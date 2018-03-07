@@ -9,6 +9,8 @@ import com.gamefx.camera.CameraTransform;
 import com.gamefx.engine.Constants;
 import com.gamefx.scene.components.Materials;
 import javafx.scene.Group;
+import javafx.scene.control.Button;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.Line;
@@ -24,7 +26,7 @@ public class DrawSceneDelegate {
     public Rectangle buildMinimap() {
 
         Rectangle minimap = new Rectangle();
-        minimap.setX(1200);
+        minimap.setX(1202);
         minimap.setY(0);
         minimap.setWidth(400);
         minimap.setHeight(400);
@@ -32,6 +34,17 @@ public class DrawSceneDelegate {
         minimap.setStroke(Color.BLACK);
 
         return minimap;
+    }
+
+    public VBox buildInfoGroup() {
+
+
+        VBox infoGroup = new VBox(2);
+        infoGroup.getChildren().add(new Button("Asd"));
+        infoGroup.setTranslateX(1200);
+        infoGroup.setTranslateY(400);
+
+        return infoGroup;
     }
 
     public void drawLinesOnMinimap(Rectangle minimap, Group group) {

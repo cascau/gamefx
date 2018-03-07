@@ -14,7 +14,7 @@ public interface Constants {
     int GRID_SQUARES_X = 30;
     int GRID_SQUARES_Y = 30;
 
-    double GRID_SQUARE_LENGTH = 20;
+    double GRID_SQUARE_LENGTH = 50;
     double BOARD_SIZE_X = GRID_SQUARES_X * GRID_SQUARE_LENGTH;
     double BOARD_SIZE_Y = GRID_SQUARES_Y * GRID_SQUARE_LENGTH;
 
@@ -28,7 +28,7 @@ public interface Constants {
     double CAMERA_INITIAL_DISTANCE_Z = -700;
     double CAMERA_INITIAL_X_ANGLE = 15.0;
     double CAMERA_INITIAL_Y_ANGLE = 45.0;
-    double CAMERA_INITIAL_Z_ANGLE = 45.0;
+    double CAMERA_INITIAL_Z_ANGLE = 15.0;
     double CAMERA_NEAR_CLIP = 0.1;
     double CAMERA_FAR_CLIP = 10000.0;
     double AXIS_LENGTH = 250.0;
